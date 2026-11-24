@@ -126,34 +126,6 @@ def init_db():
     )
     """)
 
-    # Ensure baseline department catalog exists
-    cursor.execute("SELECT COUNT(*) as cnt FROM faculty")
-    if cursor.fetchone()["cnt"] == 0:
-        default_faculty = [
-            ("VSM-CSE-SK01", "Prof. S. K. Kulkarni", "9845123456", "Dept of Computer Science & Engineering", "Assistant Professor", "CS501 - Machine Learning", hash_password("facultyPass2026")),
-            ("VSM-CSE-RP02", "Prof. R. V. Patil", "9845123457", "Dept of Computer Science & Engineering", "Associate Professor", "CS502 - Computer Networks", hash_password("facultyPass2026")),
-            ("VSM-CSE-AJ03", "Prof. A. N. Joshi", "9845123458", "Dept of Computer Science & Engineering", "Assistant Professor", "CS503 - Database Management Systems", hash_password("facultyPass2026")),
-            ("VSM-CSE-MB04", "Prof. M. S. Biradar", "9845123459", "Dept of Computer Science & Engineering", "Assistant Professor", "CS505 - Cloud Computing Architecture", hash_password("facultyPass2026"))
-        ]
-        cursor.executemany("""
-        INSERT INTO faculty (faculty_id, name, mobile, department, designation, subject, password_hash)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, default_faculty)
-
-    cursor.execute("SELECT COUNT(*) as cnt FROM courses")
-    if cursor.fetchone()["cnt"] == 0:
-        default_courses = [
-            ("CS501", "Machine Learning", "Prof. S. K. Kulkarni", "VSM-CSE-SK01", "Room 304", 4),
-            ("CS502", "Computer Networks", "Prof. R. V. Patil", "VSM-CSE-RP02", "Room 208", 4),
-            ("CS503", "Database Management Systems", "Prof. A. N. Joshi", "VSM-CSE-AJ03", "Room 304", 4),
-            ("CS504", "Full Stack Web Dev Lab", "Prof. S. K. Kulkarni", "VSM-CSE-SK01", "CSE Lab 03", 2),
-            ("CS505", "Cloud Computing Architecture", "Prof. M. S. Biradar", "VSM-CSE-MB04", "Room 208", 3)
-        ]
-        cursor.executemany("""
-        INSERT INTO courses (course_code, course_name, faculty_name, faculty_id, room_no, credits)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """, default_courses)
-
     conn.commit()
     conn.close()
 
@@ -670,29 +642,33 @@ def faculty_login():
 @app.route("/api/session/start", methods=["POST"])
 def session_start():
     data = request.get_json() or {}
-    faculty_id = data.get("faculty_id", "VSM-CSE-SK01").strip()
+    faculty_id = data.get("faculty_id", "").strip()
+    faculty_name = data.get("faculty_name", "").strip()
     subject_code = data.get("subject_code", "CS501").strip()
-    subject_name = data.get("subject_name", "Machine Learning").strip()
-    room_no = data.get("room_no", "Room 304").strip()
+    subject_name = data.get("subject_name", "Computer Science").strip()
+    room_no = data.get("room_no", "Classroom 1").strip()
     frequency_khz = float(data.get("frequency_khz", 19.25))
 
     conn = get_db()
     cursor = conn.cursor()
 
     # Verify that faculty exists in the database before starting a session
-    cursor.execute("SELECT * FROM faculty WHERE faculty_id = ?", (faculty_id,))
-    fac_row = cursor.fetchone()
+    fac_row = None
+    if faculty_id:
+        cursor.execute("SELECT * FROM faculty WHERE faculty_id = ?", (faculty_id,))
+        fac_row = cursor.fetchone()
+    
     if not fac_row:
         cursor.execute("SELECT * FROM faculty LIMIT 1")
         fac_row = cursor.fetchone()
         if fac_row:
             faculty_id = fac_row["faculty_id"]
-        else:
-            faculty_name = data.get("faculty_name", "Prof. S. K. Kulkarni")
+        elif faculty_id:
+            faculty_display_name = faculty_name or f"Faculty ({faculty_id})"
             cursor.execute("""
             INSERT INTO faculty (faculty_id, name, mobile, department, designation, subject, password_hash)
             VALUES (?, ?, '9845123456', 'Dept of Computer Science & Engineering', 'Assistant Professor', ?, ?)
-            """, (faculty_id, faculty_name, subject_name, hash_password("facultyPass2026")))
+            """, (faculty_id, faculty_display_name, subject_name, hash_password("facultyPass2026")))
             conn.commit()
 
     # Look up course details from courses table if exists
@@ -1044,12 +1020,28 @@ def export_vtu_sheet():
         cursor.execute("SELECT * FROM class_sessions ORDER BY created_at DESC LIMIT 1")
         session = cursor.fetchone()
 
-    cursor.execute("""
-    SELECT * FROM attendance_records 
-    WHERE session_id = ?
-    ORDER BY timestamp ASC
-    """, (session["session_id"],))
-    records = cursor.fetchall()
+    session_id = session["session_id"] if session else "SES-PENDING"
+    subject_code = session["subject_code"] if session else "CSE"
+    subject_name = session["subject_name"] if session else "Attendance Session"
+    room_no = session["room_no"] if session else "Classroom 1"
+    freq_khz = session["frequency_khz"] if session else 19.25
+    secret_seed = session["secret_seed"] if session else "LIVE"
+
+    fac_name = "Course Instructor"
+    if session and session["faculty_id"]:
+        cursor.execute("SELECT name FROM faculty WHERE faculty_id = ?", (session["faculty_id"],))
+        fac_row = cursor.fetchone()
+        if fac_row and fac_row["name"]:
+            fac_name = fac_row["name"]
+
+    records = []
+    if session:
+        cursor.execute("""
+        SELECT * FROM attendance_records 
+        WHERE session_id = ?
+        ORDER BY timestamp ASC
+        """, (session["session_id"],))
+        records = cursor.fetchall()
 
     cursor.execute("SELECT COUNT(*) as total FROM students")
     total_students = cursor.fetchone()["total"]
@@ -1113,7 +1105,7 @@ def export_vtu_sheet():
     <div><strong>Academic Term:</strong> 5th Semester B.E. (Odd Sem 2024-25)</div>
     <div><strong>Classroom / Venue:</strong> __ROOM__ (Lectern Podium 01)</div>
     <div><strong>Carrier Frequency:</strong> __FREQ__ kHz (Inaudible FSK Beacon)</div>
-    <div><strong>Course Instructor:</strong> Prof. S. K. Kulkarni (VSM-CSE-SK01)</div>
+    <div><strong>Course Instructor:</strong> __FACULTY__</div>
     <div><strong>Audit Session ID:</strong> __SESSION_ID__</div>
     <div><strong>Quorum Ratio:</strong> __PRESENT__ / __TOTAL__ Students Present (__QUORUM__%)</div>
     <div><strong>Audit Timestamp:</strong> __DATE__</div>
@@ -1139,7 +1131,7 @@ def export_vtu_sheet():
   <div class="footer-signatures">
     <div>
       <div class="sig-line">Signature of Course Instructor</div>
-      <div>Prof. S. K. Kulkarni</div>
+      <div>__FACULTY__</div>
     </div>
     <div>
       <div class="sig-line">Signature of Class Coordinator</div>
@@ -1157,7 +1149,20 @@ def export_vtu_sheet():
 </body>
 </html>"""
 
-    html = template.replace("__CODE__", str(session["subject_code"]))                   .replace("__NAME__", str(session["subject_name"]))                   .replace("__ROOM__", str(session["room_no"]))                   .replace("__FREQ__", str(session["frequency_khz"]))                   .replace("__SESSION_ID__", str(session["session_id"]))                   .replace("__PRESENT__", str(present_count))                   .replace("__TOTAL__", str(total_students))                   .replace("__QUORUM__", str(quorum_pct))                   .replace("__DATE__", datetime.now().strftime("%d-%b-%Y %I:%M %p"))                   .replace("__ROWS__", table_rows)                   .replace("__SEED__", str(session["secret_seed"]))
+    html = (template
+        .replace("__CODE__", str(subject_code))
+        .replace("__NAME__", str(subject_name))
+        .replace("__ROOM__", str(room_no))
+        .replace("__FREQ__", str(freq_khz))
+        .replace("__SESSION_ID__", str(session_id))
+        .replace("__PRESENT__", str(present_count))
+        .replace("__TOTAL__", str(total_students))
+        .replace("__QUORUM__", str(quorum_pct))
+        .replace("__DATE__", datetime.now().strftime("%d-%b-%Y %I:%M %p"))
+        .replace("__ROWS__", table_rows)
+        .replace("__FACULTY__", str(fac_name))
+        .replace("__SEED__", str(secret_seed))
+    )
 
     return html
 

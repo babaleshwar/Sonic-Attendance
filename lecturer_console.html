@@ -865,10 +865,11 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            faculty_id: savedFaculty.faculty_id || 'VSM-CSE-SK01',
-            subject_code: 'CS501',
-            subject_name: 'Machine Learning',
-            room_no: savedFaculty.room_no || 'Room 304',
+            faculty_id: (savedFaculty && savedFaculty.faculty_id) ? savedFaculty.faculty_id : '',
+            faculty_name: (savedFaculty && savedFaculty.name) ? savedFaculty.name : 'Faculty Instructor',
+            subject_code: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject.split(' - ')[0] : 'CSE',
+            subject_name: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject : 'Computer Science',
+            room_no: (savedFaculty && savedFaculty.room_no) ? savedFaculty.room_no : 'Classroom 1',
             frequency_khz: 19.25
           })
         });
@@ -1267,7 +1268,8 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            faculty_id: savedFaculty.faculty_id || 'VSM-CSE-SK01',
+            faculty_id: (savedFaculty && savedFaculty.faculty_id) ? savedFaculty.faculty_id : '',
+            faculty_name: (savedFaculty && savedFaculty.name) ? savedFaculty.name : 'Faculty Instructor',
             subject_code: course.course_code,
             subject_name: course.course_name,
             room_no: course.room_no,

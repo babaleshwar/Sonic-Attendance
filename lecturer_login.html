@@ -271,7 +271,7 @@
               </div>
               <input
                 class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-inner"
-                id="lecName" placeholder="e.g., Prof. S. K. Kulkarni" required="" type="text"  />
+                id="lecName" placeholder="e.g., Prof. Ramesh Patil / Dr. Anita Joshi" required="" type="text"  />
             </div>
           </div>
 
@@ -444,14 +444,8 @@
             showToast(data.message || 'Faculty login failed. Check ID/Mobile or Password.', 'error', 'Login Failed');
           }
         } catch (err) {
-          
-          localStorage.setItem('current_faculty', JSON.stringify({
-            faculty_id: 'VSM-CSE-SK01',
-            name: 'Prof. S. K. Kulkarni',
-            subject: 'CS501 - Machine Learning',
-            department: 'Dept of CSE'
-          }));
-          window.location.href = "/faculty/console";
+          console.error("Login error:", err);
+          showToast('Network error connecting to authentication server. Please check your connection.', 'error', 'Connection Error');
         }
       });
     }
