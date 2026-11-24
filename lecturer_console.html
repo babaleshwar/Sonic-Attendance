@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SonicAttend Lecturer Console - VSMSRKITE Nipani</title>
+  <link rel="icon" type="image/png" href="logo.png"/>
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "outline": "#928f9a",
+            "surface": "#0b1326",
+            "error": "#ffb4ab",
+            "on-background": "#dae2fd",
+            "primary": "#c4c1fb",
+            "primary-container": "#1e1b4b",
+            "secondary": "#4edea3",
+            "secondary-container": "#00a572",
+            "secondary-fixed": "#6ffbbe",
+            "tertiary": "#4cd7f6",
+            "tertiary-container": "#00262e",
+            "on-surface": "#dae2fd",
+            "on-surface-variant": "#c8c5d0",
+            "outline-variant": "#47464f",
+            "surface-dim": "#0b1326",
+            "surface-container-lowest": "#060e20",
+            "surface-container-low": "#131b2e",
+            "surface-container": "#171f33",
+            "surface-container-high": "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant": "#2d3449",
+            "surface-bright": "#31394d",
+            "background": "#0b1326",
+            "error-container": "#93000a",
+            "on-secondary": "#003824"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes eq-bounce {
+      0%, 100% { height: 16%; }
+      50% { height: 94%; }
+    }
+    .eq-bar-1 { animation: eq-bounce 1.1s ease-in-out infinite 0.1s; }
+    .eq-bar-2 { animation: eq-bounce 0.85s ease-in-out infinite 0.25s; }
+    .eq-bar-3 { animation: eq-bounce 1.35s ease-in-out infinite 0.15s; }
+    .eq-bar-4 { animation: eq-bounce 0.95s ease-in-out infinite 0.35s; }
+    .eq-bar-5 { animation: eq-bounce 1.2s ease-in-out infinite 0.2s; }
+    .eq-bar-6 { animation: eq-bounce 0.75s ease-in-out infinite 0.4s; }
+    .eq-bar-7 { animation: eq-bounce 1.05s ease-in-out infinite 0.3s; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-tertiary selection:text-on-tertiary overflow-x-hidden">
+
+<header class="bg-surface-container-low/95 docked full-width top-0 sticky z-50 shadow-sm backdrop-blur-md border-b border-outline-variant/60">
+  <div class="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 max-w-full h-16 gap-3">
+
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 group" title="Return to SonicAttend Home">
+        <img alt="SonicAttend Brand Logo" class="w-10 h-10 object-contain drop-shadow-[0_2px_10px_rgba(78,222,163,0.35)] flex-shrink-0 group-hover:scale-105 transition-transform" src="logo.png"/>
+        <div class="flex flex-col min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-base sm:text-lg font-bold text-on-surface tracking-tight leading-tight">SonicAttend</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/40 text-purple-300 uppercase tracking-wider">Lecturer Console</span>
+          </div>
+          <span class="text-[11px] text-on-surface-variant font-medium leading-none truncate">VSMSRKITE Nipani • Dept of Computer Science & Engineering</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="hidden 2xl:flex items-center gap-5 text-xs font-semibold text-on-surface-variant">
+      <a class="text-tertiary font-bold border-b-2 border-tertiary pb-0.5 transition-colors" href="#live-session">Live Broadcast</a>
+      <a class="hover:text-on-surface transition-colors" href="#roster">Roster Telemetry</a>
+      <a class="hover:text-on-surface transition-colors" href="/api/export/vtu-report">VTU Exports</a>
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+      
+      <div id="nav-beacon-chip" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-full border border-secondary/30 shadow-inner">
+        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+        <span class="text-[11px] font-mono text-secondary font-bold tracking-wider">19.25 kHz ACTIVE</span>
+      </div>
+
+      <a href="index.html" title="SonicAttend Home Hub" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors">
+        <span class="material-symbols-outlined text-[16px]">home</span>
+        <span class="hidden xl:inline">Home</span>
+      </a>
+
+      <a href="student_attendance.html" title="Open Student Mobile View" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container/20 border border-secondary/30 text-secondary hover:text-white text-xs font-semibold transition-colors">
+        <span class="material-symbols-outlined text-[16px]">smartphone</span>
+        <span class="hidden sm:inline">Student View</span>
+      </a>
+
+      <button id="btn-top-broadcast" onclick="toggleBroadcast()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-error-container text-error hover:bg-error-container/80 text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer shrink-0">
+        <span class="material-symbols-outlined text-[16px]">sensors</span>
+        <span id="btn-top-broadcast-text">Stop Broadcast</span>
+      </button>
+
+      <div class="flex items-center gap-1.5 pl-2 border-l border-outline-variant/40">
+        <div class="w-8 h-8 rounded-full bg-purple-900/60 border border-purple-400/50 flex items-center justify-center text-purple-200 font-bold text-xs" title="Prof. S. K. Kulkarni (VSM-CSE-SK01)">
+          SK
+        </div>
+        <div class="hidden xl:flex flex-col text-left">
+          <span class="text-xs font-bold text-on-surface leading-tight">Prof. S. K. Kulkarni</span>
+          <span class="text-[10px] text-on-surface-variant leading-none">Dept of CSE</span>
+        </div>
+        <button onclick="facultySignOut()" title="Sign Out of Faculty Console" class="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors flex items-center justify-center cursor-pointer ml-0.5">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+<div class="flex flex-1 w-full max-w-full relative">
+<aside class="hidden md:flex flex-col justify-between h-[calc(100vh-4rem)] sticky top-16 w-64 bg-surface-container-lowest dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline-variant p-space-md shrink-0">
+
+<div class="flex flex-col gap-space-lg">
+
+<div class="flex items-center gap-space-sm pb-space-sm border-b border-outline-variant/60">
+<img alt="SonicAttend Logo" class="w-12 h-12 object-contain drop-shadow-[0_2px_12px_rgba(78,222,163,0.3)] flex-shrink-0" src="logo.png"/>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm text-primary dark:text-primary font-bold">VSMSRKITE CSE</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Prof. S. K. Kulkarni</span>
+</div>
+</div>
+
+<button class="w-full py-2.5 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary text-label-md font-label-md flex items-center justify-center gap-2 border border-tertiary/20 shadow-sm transition-colors active:scale-[0.99]">
+<span class="material-symbols-outlined text-tertiary">add_circle</span>
+<span>New Session</span>
+</button>
+
+<div class="flex flex-col gap-1.5">
+
+<a class="flex items-center gap-space-sm text-secondary bg-surface-container rounded-lg px-space-md py-space-sm font-semibold border-l-4 border-secondary cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+<span class="material-symbols-outlined">radar</span>
+<span class="text-label-md font-label-md">Acoustic Broadcast</span>
+</a>
+
+<a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="document.getElementById('roster').scrollIntoView({behavior:'smooth'})">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-label-md font-label-md">Active Roster</span>
+</a>
+
+<a class="flex items-center gap-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined">key</span>
+<span class="text-label-md font-label-md">Cryptographic Keys</span>
+</a>
+
+<a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="window.location.href='/api/export/vtu-report'">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-md font-label-md">VTU Compliance Reports</span>
+</a>
+
+<a class="flex items-center gap-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined">tune</span>
+<span class="text-label-md font-label-md">Transmitter Settings</span>
+</a>
+</div>
+</div>
+
+<div class="flex flex-col gap-1.5 pt-space-md border-t border-outline-variant/50">
+<a class="flex items-center gap-space-sm text-on-surface-variant hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container transition-colors text-label-md font-label-md cursor-pointer" onclick="toggleMicListener()">
+<span class="material-symbols-outlined">equalizer</span>
+<span>System Diagnostics (Mic Test)</span>
+</a>
+<a class="flex items-center gap-space-sm text-error hover:bg-error-container/20 rounded-lg px-space-md py-space-sm font-medium transition-colors text-label-md font-label-md cursor-pointer" onclick="facultySignOut()">
+<span class="material-symbols-outlined">logout</span>
+<span>Secure Sign Out</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-lg overflow-y-auto pb-44 sm:pb-36 relative z-10">
+
+<section class="bg-surface-container-low/90 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-space-md">
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="p-3 rounded-lg bg-surface-container border border-tertiary/20 text-tertiary">
+<span class="material-symbols-outlined text-3xl">podium</span>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-tertiary-container text-tertiary border border-tertiary/40">Odd Sem 2024-25</span>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant">Department of Computer Science &amp; Engineering</span>
+<span class="text-label-sm font-label-sm text-secondary font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Live Synchronized
+              </span>
+</div>
+<h1 class="text-headline-md font-headline-md text-on-surface mt-1 font-bold">
+              CSE 5th Sem - CS501: Machine Learning • Room 304
+            </h1>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              Scheduled slot: <strong class="text-on-surface font-semibold">10:30 AM - 11:30 AM</strong> (28 mins elapsed) • Beacon Transmitter: Lectern Podium 01
+            </p>
+</div>
+</div>
+
+<div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+  <div class="relative flex items-center">
+    <span class="material-symbols-outlined absolute left-2.5 text-tertiary text-base pointer-events-none">menu_book</span>
+    <select id="active-course-select" onchange="onClassroomCourseChanged(this.value)" class="pl-8 pr-8 py-1.5 rounded-lg bg-surface-container border border-outline-variant text-xs font-semibold text-on-surface focus:outline-none focus:border-tertiary appearance-none cursor-pointer">
+      <option value="CS501" selected>CS501: Machine Learning (Room 304)</option>
+      <option value="CS502">CS502: Computer Networks (Room 208)</option>
+      <option value="CS503">CS503: Database Management Systems (Room 304)</option>
+      <option value="CS504">CS504: Full Stack Web Development Lab (Lab 2)</option>
+      <option value="CS505">CS505: Research Methodology & IPR (Seminar Hall 1)</option>
+    </select>
+    <span class="material-symbols-outlined absolute right-2 text-outline text-sm pointer-events-none">unfold_more</span>
+  </div>
+</div>
+</section>
+
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+<div class="lg:col-span-7 bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-lg border border-tertiary/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
+
+<div class="absolute -top-16 -right-16 w-64 h-64 bg-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div>
+
+<div class="flex justify-between items-start mb-space-md">
+<div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping"></span>
+<span class="text-label-sm font-label-sm text-secondary font-bold uppercase tracking-wider">High-Frequency Acoustic Beacon</span>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface mt-1 font-bold">
+                  Broadcasting Inaudible Acoustic Token
+                </h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+                  17.5 kHz – 19.8 kHz Multi-Frequency FSK (Frequency Shift Keying)
+                </p>
+</div>
+<div class="px-3 py-1 rounded-lg bg-surface-container border border-secondary/40 text-secondary text-label-md font-label-md flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-secondary">graphic_eq</span>
+<span>TX Gain: +24 dB SNR</span>
+</div>
+</div>
+
+<div class="bg-surface-container-lowest/90 rounded-xl p-space-md border border-outline-variant/60 my-space-md">
+<div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span class="flex items-center gap-1.5 font-mono">
+<span id="fsk-led" class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-on-surface font-bold">REAL-TIME FFT SPECTRAL DENSITY</span>
+</span>
+<span id="fsk-mode-badge" class="px-2 py-0.5 rounded bg-surface-container text-tertiary font-mono text-[11px] border border-outline-variant/30">Web Audio FSK Synthesizer</span>
+</div>
+
+<div class="relative w-full rounded-xl overflow-hidden border border-secondary/30 bg-gradient-to-b from-surface-container-low/95 to-surface-container-lowest/95 p-4 flex flex-col gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
+  
+  <div class="absolute inset-0 bg-radial from-secondary/10 via-transparent to-transparent pointer-events-none"></div>
+
+  <div class="flex items-center justify-between text-xs font-mono relative z-10">
+    <div class="flex items-center gap-2">
+      <span class="relative flex h-2 w-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+      </span>
+      <span id="fsk-carrier-status" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary text-[11px] font-bold border border-secondary/40 shadow-sm">
+        Carrier: 19,250 Hz (Inaudible FSK Beacon)
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="fsk-snr-reading" class="px-2.5 py-0.5 rounded bg-surface-container text-tertiary text-[11px] font-bold border border-tertiary/40 shadow-sm">
+        SNR: +26 dB (Optimum Acoustic Channel)
+      </span>
+      <span class="px-2 py-0.5 rounded bg-purple-900/50 text-purple-300 text-[10px] border border-purple-500/30 font-bold uppercase">
+        TX Gain 100%
+      </span>
+    </div>
+  </div>
+
+  <div id="lec-eq-bars" class="relative z-10 flex items-end justify-center gap-2 h-16 py-1.5 px-3 bg-surface-dim/80 rounded-lg border border-outline-variant/30 overflow-hidden shadow-inner">
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-1 h-5 shadow-[0_0_10px_rgba(76,215,246,0.6)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-2 h-9 shadow-[0_0_12px_rgba(78,222,163,0.7)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-3 h-13 shadow-[0_0_14px_rgba(76,215,246,0.8)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-4 h-15 shadow-[0_0_16px_rgba(78,222,163,0.9)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-5 h-11 shadow-[0_0_12px_rgba(78,222,163,0.7)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-6 h-14 shadow-[0_0_14px_rgba(76,215,246,0.85)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-7 h-8 shadow-[0_0_10px_rgba(78,222,163,0.6)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-4 h-15 shadow-[0_0_16px_rgba(76,215,246,0.9)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-3 h-13 shadow-[0_0_14px_rgba(78,222,163,0.8)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-5 h-11 shadow-[0_0_12px_rgba(76,215,246,0.7)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-2 h-9 shadow-[0_0_10px_rgba(78,222,163,0.6)]"></div>
+    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-6 h-14 shadow-[0_0_14px_rgba(78,222,163,0.85)]"></div>
+  </div>
+
+  <div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono relative z-10 pt-1 border-t border-outline-variant/20">
+    <span class="flex items-center gap-1.5 text-secondary">
+      <span class="material-symbols-outlined text-[15px]">sensors</span>
+      <span>Acoustic Frequency: 18.5 kHz – 19.8 kHz Active Pulse</span>
+    </span>
+    <span class="text-tertiary font-bold">Room 304 Transmit Safe</span>
+  </div>
+</div>
+
+<div class="flex items-end justify-between gap-1.5 px-2 pt-2 border-b border-outline-variant/40 pb-2 h-14">
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-175" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-2 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">17.5k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-178" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-2 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">17.8k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-180" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-3 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">18.0k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-185" class="w-full bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-t h-6 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">18.5k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-190" class="w-full bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-t h-8 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">19.0k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-1925" class="w-full bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-t h-12 shadow-[0_0_12px_rgba(78,222,163,0.7)] transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-secondary font-bold">19.25k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-195" class="w-full bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-t h-7 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">19.5k</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+    <div id="meter-198" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-4 transition-all duration-75"></div>
+    <span class="text-[9px] font-mono text-outline">19.8k</span>
+  </div>
+</div>
+
+<div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono mt-2 pt-1">
+<span>Modulation: Continuous Multi-Tone FSK</span>
+<span id="fsk-pilot-footer" class="text-secondary font-bold">Pilot Wave: Synced (19.250 kHz)</span>
+<span>Coverage: Classroom 304</span>
+</div>
+</div>
+</div>
+
+<div class="flex flex-wrap items-center justify-between gap-space-md mt-space-sm pt-space-md border-t border-outline-variant/40">
+<div class="flex items-center gap-2">
+<button id="btn-pause-broadcast" onclick="toggleBroadcast()" class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-base">pause_circle</span>
+<span id="btn-pause-text">Pause Broadcast</span>
+</button>
+<button id="btn-toggle-mic" onclick="toggleMicListener()" class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-base text-tertiary">mic</span>
+<span id="btn-mic-text">Listen to Room Mic</span>
+</button>
+<button id="btn-reset-roster" onclick="resetRosterSession()" class="px-3.5 py-2 rounded-lg bg-error-container/20 hover:bg-error-container/40 border border-error/30 text-error text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer" title="Clear present records for new session">
+<span class="material-symbols-outlined text-base">delete_sweep</span>
+<span>Clear Roster</span>
+</button>
+<button id="btn-simulate-checkin" onclick="simulateAttendance()" class="px-3.5 py-2 rounded-lg bg-secondary/15 hover:bg-secondary/25 border border-secondary/40 text-secondary text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer" title="Simulate student ultrasonic check-in for live classroom demonstration">
+<span class="material-symbols-outlined text-base">group_add</span>
+<span id="btn-simulate-text">Simulate Check-in</span>
+</button>
+</div>
+
+<div class="relative flex items-center">
+<span id="broadcast-glow" class="absolute -inset-1 rounded-full bg-secondary/30 blur-sm animate-pulse"></span>
+<button id="btn-status-pill" onclick="toggleBroadcast()" class="relative px-5 py-2 rounded-full bg-secondary text-on-secondary font-bold text-label-lg font-label-lg flex items-center gap-2 shadow-lg hover:opacity-95 active:scale-95 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-xl">sensors</span>
+<span id="pill-broadcast-text">Broadcasting Active</span>
+</button>
+</div>
+</div>
+</div>
+
+<div class="lg:col-span-5 bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-lg border border-outline-variant/60 shadow-lg flex flex-col justify-between relative overflow-hidden">
+<div>
+
+<div class="flex justify-between items-center mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-tertiary-container text-tertiary">
+<span class="material-symbols-outlined text-sm">lock_clock</span>
+</span>
+<span class="text-label-sm font-label-sm text-tertiary font-bold uppercase tracking-wider">Zero-Replay Security</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant/40">
+                Window 15s
+              </span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">
+              Dynamic Ultrasonic Cryptographic Token
+            </h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+              Rotating payload encoded within the acoustic beacon to prevent relay &amp; proxy attacks.
+            </p>
+
+<div class="my-6 flex items-center justify-around bg-surface-container-lowest/80 rounded-xl p-space-md border border-outline-variant/40">
+
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-on-surface-variant tracking-wider uppercase font-mono">CURRENT PAYLOAD TOKEN</span>
+<div id="lec-token-display" class="text-4xl font-extrabold font-mono tracking-widest text-tertiary drop-shadow-[0_0_12px_rgba(76,215,246,0.6)] my-1">
+  #A5F2
+</div>
+<div class="flex items-center gap-1.5 text-secondary text-label-sm font-label-sm font-mono">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span>AES-GCM Authenticated</span>
+</div>
+</div>
+
+<div class="relative w-24 h-24 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+
+<circle class="text-surface-container" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
+
+<circle id="lec-timer-circle" class="text-tertiary transition-all duration-1000" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="264" stroke-dashoffset="71" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span id="lec-timer-display" class="text-base font-bold font-mono text-on-surface leading-none">11s</span>
+<span class="text-[9px] text-outline font-mono">/ 15s</span>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-2 text-body-sm font-body-sm">
+<div class="p-2 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline uppercase font-mono">Salt Variant</span>
+<span class="text-xs font-semibold text-on-surface">sha256_v4</span>
+</div>
+</div>
+<div class="p-2 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">phonelink_lock</span>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline uppercase font-mono">Hardware Link</span>
+<span class="text-xs font-semibold text-on-surface">Device Bound</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-space-md pt-3 border-t border-outline-variant/40 flex items-center justify-between text-label-sm font-label-sm">
+<span class="text-on-surface-variant flex items-center gap-1 font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Zero Replay Security Active
+            </span>
+<button class="text-tertiary hover:underline font-semibold flex items-center gap-0.5">
+<span>View Key Registry</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-surface-variant">Total Enrolled</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">school</span>
+</div>
+</div>
+<div class="my-2">
+<div id="stat-total-count" class="text-headline-lg font-headline-lg text-on-surface font-extrabold tracking-tight">0</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">CSE Batch 2024 • Section A</p>
+</div>
+<div class="text-label-sm font-label-sm text-outline flex items-center gap-1 border-t border-outline-variant/40 pt-2 font-mono">
+<span>Quota Registered: 100%</span>
+</div>
+</div>
+
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-secondary/40 shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 right-0 w-24 h-24 bg-secondary/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-secondary font-semibold">Present Now</span>
+<div class="w-8 h-8 rounded-lg bg-secondary-container/40 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-lg">how_to_reg</span>
+</div>
+</div>
+<div class="my-2 flex items-baseline gap-3">
+<div id="stat-present-count" class="text-headline-lg font-headline-lg text-secondary font-extrabold tracking-tight">0</div>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary/20 text-secondary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> Live Sync
+            </span>
+</div>
+<div class="text-label-sm font-label-sm text-secondary flex items-center justify-between border-t border-outline-variant/40 pt-2 font-mono">
+<span id="stat-quorum-pct">Quorum: 0.0%</span>
+<span class="text-[10px] text-outline">VTU Min: 75.0%</span>
+</div>
+</div>
+
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-surface-variant">Absent / Unmarked</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-lg">person_off</span>
+</div>
+</div>
+<div class="my-2 flex items-baseline gap-2">
+<div id="stat-absent-count" class="text-headline-lg font-headline-lg text-on-surface font-extrabold tracking-tight">0</div>
+<span class="text-body-sm font-body-sm text-outline">Pending sync</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant/40 pt-2 text-label-sm font-label-sm">
+<span id="stat-absent-pending" class="text-error/90 font-medium">-- pending</span>
+<button class="text-tertiary hover:underline font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-xs">notifications_active</span>
+<span>Quick Ping</span>
+</button>
+</div>
+</div>
+
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-tertiary font-semibold">Verification Integrity</span>
+<div class="w-8 h-8 rounded-lg bg-tertiary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-lg">verified</span>
+</div>
+</div>
+<div class="my-2">
+<div class="text-headline-lg font-headline-lg text-tertiary font-extrabold tracking-tight">98.2%</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">0 Spoofed Packets Detected</p>
+</div>
+<div class="text-label-sm font-label-sm text-outline flex items-center gap-1 border-t border-outline-variant/40 pt-2 font-mono">
+<span>Hardware Bound: 100%</span>
+</div>
+</div>
+</section>
+
+<section class="bg-surface-container-low/80 backdrop-blur-md rounded-xl border border-outline-variant/60 shadow-lg flex flex-col overflow-hidden" id="roster">
+
+<div class="p-space-md border-b border-outline-variant/60 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-space-md">
+<div class="flex items-center gap-space-md">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold flex items-center gap-2">
+<span>Real-Time Attendance Roster</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary/15 text-secondary border border-secondary/30">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                  Live Sync Active
+                </span>
+</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Live acoustic stream incoming from student mobile microphones</p>
+</div>
+</div>
+
+<div class="flex flex-wrap items-center gap-space-sm">
+
+<div class="relative min-w-[220px]">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">search</span>
+<input id="roster-search-input" oninput="filterRosterTable()" class="w-full pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/60 text-on-surface text-body-sm font-body-sm placeholder:text-outline focus:border-tertiary focus:outline-none focus:ring-1 focus:ring-tertiary" placeholder="Filter by USN or Name..." type="text"/>
+</div>
+
+<div class="inline-flex rounded-lg bg-surface-container-lowest p-1 border border-outline-variant/60 text-label-sm font-label-sm">
+<button id="btn-filter-all-roster" onclick="setRosterFilter('ALL')" class="px-2.5 py-1 rounded bg-surface-container text-on-surface font-semibold shadow-sm cursor-pointer">All (0)</button>
+<button id="btn-filter-verified" onclick="setRosterFilter('VERIFIED')" class="px-2.5 py-1 rounded hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer">Verified (0)</button>
+<button id="btn-filter-pending" onclick="setRosterFilter('PENDING')" class="px-2.5 py-1 rounded hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer">Pending (0)</button>
+</div>
+<button class="p-2 rounded-lg bg-surface-container border border-outline-variant hover:bg-surface-bright text-on-surface-variant hover:text-on-surface transition-colors" title="Export current view">
+<span class="material-symbols-outlined text-base">filter_list</span>
+</button>
+</div>
+</div>
+
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse text-body-sm font-body-sm">
+
+<thead>
+<tr class="bg-surface-container-lowest/80 border-b border-outline-variant/60 text-label-sm font-label-sm text-outline uppercase font-mono">
+<th class="py-3 px-4 w-12 text-center">#</th>
+<th class="py-3 px-4">Student Details</th>
+<th class="py-3 px-4">Time Marked</th>
+<th class="py-3 px-4">Device Binding Status</th>
+<th class="py-3 px-4">Acoustic Signal Quality</th>
+<th class="py-3 px-4 text-center">Status</th>
+<th class="py-3 px-4 text-right">Actions</th>
+</tr>
+</thead>
+
+<tbody id="roster-tbody" class="divide-y divide-outline-variant/30">
+<tr>
+<td colspan="7" class="py-12 text-center text-on-surface-variant font-mono">
+  <div class="flex flex-col items-center justify-center gap-2">
+    <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">hearing</span>
+    <span class="text-sm font-semibold text-on-surface">Live Acoustic Roster Active (19.25 kHz)</span>
+    <span class="text-xs text-outline">No students checked in yet. Waiting for acoustic sync...</span>
+  </div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="p-space-md bg-surface-container-lowest/70 border-t border-outline-variant/60 flex flex-col sm:flex-row justify-between items-center gap-space-sm text-body-sm font-body-sm text-on-surface-variant">
+<div>
+            <span id="roster-footer-summary">Loading registered students count...</span>
+          </div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant text-outline disabled:opacity-40" disabled="">Previous</button>
+<span class="px-2 font-mono text-xs">Page 1 of 10</span>
+<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:text-on-surface text-on-surface-variant">Next</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-low/95 backdrop-blur-xl border-t border-outline-variant/60 px-4 sm:px-6 lg:px-8 py-2.5 shadow-[0_-8px_30px_rgba(0,0,0,0.65)]">
+  <div class="flex flex-col sm:flex-row justify-between items-center gap-2.5 max-w-full mx-auto w-full">
+    
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container border border-outline-variant/50 text-xs">
+        <span class="material-symbols-outlined text-secondary text-sm">verified</span>
+        <span class="text-on-surface font-semibold">Verified Portal Format Compliant</span>
+      </div>
+      <span class="hidden md:inline text-xs text-on-surface-variant font-mono">
+        Cryptographic Hash: <code class="text-tertiary">#0x882A...FD01</code>
+      </span>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-2 justify-end">
+      
+      <button onclick="openEmergencyQRModal()" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-outline-variant text-on-surface text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-sm text-tertiary">qr_code_2</span>
+        <span>Fallback QR</span>
+      </button>
+      
+      <button onclick="window.location.href='/api/export/vtu-report'" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-outline-variant text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-sm text-primary">table_view</span>
+        <span>Export CSV</span>
+      </button>
+      
+      <button onclick="window.open('/api/export/vtu-sheet', '_blank')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright border border-tertiary/40 text-tertiary text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer" title="Open official VTU print-ready attendance sheet">
+        <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+        <span>Official VTU Sheet</span>
+      </button>
+      
+      <button onclick="finalizeSession()" class="px-4 py-1.5 rounded-lg bg-secondary text-on-secondary hover:bg-secondary-fixed text-xs font-bold flex items-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer">
+        <span class="material-symbols-outlined text-base">task_alt</span>
+        <span>Stop &amp; Finalize Session</span>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<div id="emergency-qr-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in">
+  <div class="relative w-full max-w-md bg-surface-container-low border border-outline-variant/70 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] p-6 flex flex-col items-center text-center space-y-4">
+    
+    <button onclick="closeEmergencyQRModal()" class="absolute top-4 right-4 p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+
+    <div class="flex items-center gap-2 text-tertiary">
+      <span class="material-symbols-outlined text-2xl">qr_code_scanner</span>
+      <h3 class="text-sm font-bold text-on-surface tracking-wider uppercase font-mono">Emergency Acoustic Fallback QR</h3>
+    </div>
+    <p class="text-xs text-on-surface-variant leading-relaxed">
+      Optical fallback channel for student devices unable to decode the 19.25 kHz acoustic beacon due to microphone hardware constraints.
+    </p>
+
+    <div class="p-3 bg-white rounded-xl shadow-xl border-2 border-secondary/60 relative flex items-center justify-center">
+      <img id="emergency-qr-img" src="" alt="Dynamic Acoustic Token QR Code" class="w-48 h-48 rounded" />
+    </div>
+
+    <div class="w-full bg-surface-container rounded-xl p-3 border border-outline-variant/40 space-y-1.5 font-mono text-xs text-left">
+      <div class="flex justify-between items-center">
+        <span class="text-on-surface-variant">Class Subject:</span>
+        <span id="eqr-course-code" class="text-secondary font-bold">CS501 - Machine Learning</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-on-surface-variant">15s Rotating Token:</span>
+        <span id="eqr-token-display" class="text-tertiary font-bold text-sm tracking-wider">#8FF1</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-on-surface-variant">Security Signature:</span>
+        <span id="eqr-hash-display" class="text-on-surface font-mono text-[11px]">#0x882AFD01-VTU</span>
+      </div>
+      <div class="flex justify-between items-center pt-1.5 border-t border-outline-variant/20">
+        <span class="text-on-surface-variant">Token Window Expires In:</span>
+        <span id="eqr-countdown" class="text-secondary font-bold">15s</span>
+      </div>
+    </div>
+
+    <div class="w-full flex items-center justify-between gap-3 pt-1">
+      <button onclick="refreshEmergencyQR()" class="flex-1 py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-bright border border-outline-variant text-xs font-semibold text-on-surface flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-sm text-tertiary">sync</span>
+        <span>Refresh Token</span>
+      </button>
+      <button onclick="closeEmergencyQRModal()" class="flex-1 py-2 px-3 rounded-lg bg-secondary text-on-secondary hover:bg-secondary-fixed text-xs font-bold transition-all cursor-pointer">
+        <span>Close Modal</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+    // audio engine
+    let isBroadcasting = false;
+  let audioCtx = null;
+  let osc = null;
+  let gainNode = null;
+  let analyser = null;
+  let animId = null;
+  let fskModulatorTimer = null;
+  let micStream = null;
+  let isMicListening = false;
+
+  // fsk frequencies
+  const FSK_FREQUENCIES = [18500, 18800, 19000, 19250, 19500, 19800];
+  let currentFskIndex = 3; // 19250 Hz primary carrier
+
+  // Faculty identity from localStorage or default
+  const savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || '{"faculty_id":"VSM-CSE-SK01","name":"Prof. S. K. Kulkarni","subject":"CS501 - Machine Learning","room_no":"Room 304"}');
+  if (savedFaculty && savedFaculty.name) {
+    const nameEl = document.getElementById('faculty-display-name');
+    if (nameEl) nameEl.textContent = savedFaculty.name;
+    const idEl = document.getElementById('faculty-display-id');
+    if (idEl) idEl.textContent = savedFaculty.faculty_id;
+  }
+
+  function initAudioEngine() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      if (!analyser) {
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        analyser.smoothingTimeConstant = 0.7;
+      }
+    } catch (e) {
+      console.warn("Audio Context init notice:", e);
+    }
+  }
+
+  function startUltrasonicBroadcast() {
+    initAudioEngine();
+    if (!audioCtx || !analyser) return;
+
+    if (osc) {
+      try { osc.stop(); } catch(e) {}
+      osc = null;
+    }
+
+    osc = audioCtx.createOscillator();
+    gainNode = audioCtx.createGain();
+
+    osc.type = 'sine';
+    const carrier = FSK_FREQUENCIES[currentFskIndex];
+    osc.frequency.setValueAtTime(carrier, audioCtx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+
+    osc.connect(gainNode);
+    gainNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    osc.start();
+    isBroadcasting = true;
+
+    if (fskModulatorTimer) clearInterval(fskModulatorTimer);
+    fskModulatorTimer = setInterval(() => {
+      if (!isBroadcasting || !osc || !audioCtx) return;
+      currentFskIndex = (currentFskIndex + 1) % FSK_FREQUENCIES.length;
+      const targetFreq = FSK_FREQUENCIES[currentFskIndex];
+      osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
+
+      const carrierEl = document.getElementById('fsk-carrier-status');
+      if (carrierEl) carrierEl.textContent = `Carrier: ${(targetFreq/1000).toFixed(3)} kHz (Active FSK)`;
+      const pilotFooter = document.getElementById('fsk-pilot-footer');
+      if (pilotFooter) pilotFooter.textContent = `Pilot Wave: Synced (${(targetFreq/1000).toFixed(3)} kHz)`;
+    }, 1500);
+
+    updateBroadcastUI(true);
+    startCanvasVisualizer();
+  }
+
+  function stopUltrasonicBroadcast() {
+    if (fskModulatorTimer) clearInterval(fskModulatorTimer);
+    if (osc) {
+      try { osc.stop(); } catch(e) {}
+      osc = null;
+    }
+    isBroadcasting = false;
+    updateBroadcastUI(false);
+    const carrierEl = document.getElementById('fsk-carrier-status');
+    if (carrierEl) carrierEl.textContent = 'Carrier: Standby / Muted (0 Hz)';
+    const snrEl = document.getElementById('fsk-snr-reading');
+    if (snrEl) snrEl.textContent = 'SNR: 0 dB (Silence)';
+    const pilotFooter = document.getElementById('fsk-pilot-footer');
+    if (pilotFooter) pilotFooter.textContent = 'Pilot Wave: Disconnected';
+  }
+
+  function updateBroadcastUI(active) {
+    const btnTop = document.getElementById('btn-top-broadcast');
+    const btnPauseText = document.getElementById('btn-pause-text');
+    const pillText = document.getElementById('pill-broadcast-text');
+    const led = document.getElementById('fsk-led');
+    const glow = document.getElementById('broadcast-glow');
+
+    if (active) {
+      if (btnTop) {
+        btnTop.textContent = 'Stop Broadcast';
+        btnTop.className = 'inline-flex items-center px-3.5 py-1.5 rounded-lg bg-error-container text-error hover:bg-error-container/80 text-label-md font-label-md transition-colors active:scale-[0.98] font-bold cursor-pointer';
+      }
+      if (btnPauseText) btnPauseText.textContent = 'Pause Broadcast';
+      if (pillText) pillText.textContent = 'Broadcasting Active';
+      if (led) led.className = 'w-2 h-2 rounded-full bg-secondary animate-pulse';
+      if (glow) glow.className = 'absolute -inset-1 rounded-full bg-secondary/30 blur-sm animate-pulse';
+    } else {
+      if (btnTop) {
+        btnTop.textContent = 'Start Broadcast';
+        btnTop.className = 'inline-flex items-center px-3.5 py-1.5 rounded-lg bg-emerald-700 text-white hover:bg-emerald-600 text-label-md font-label-md transition-colors active:scale-[0.98] font-bold cursor-pointer';
+      }
+      if (btnPauseText) btnPauseText.textContent = 'Resume Broadcast';
+      if (pillText) pillText.textContent = 'Broadcast Paused';
+      if (led) led.className = 'w-2 h-2 rounded-full bg-outline';
+      if (glow) glow.className = 'hidden';
+    }
+  }
+
+  async function toggleBroadcast() {
+    initAudioEngine();
+    if (isBroadcasting) {
+      try { await fetch('/api/session/stop', { method: 'POST' }); } catch(e) {}
+      stopUltrasonicBroadcast();
+    } else {
+      try {
+        await fetch('/api/session/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            faculty_id: savedFaculty.faculty_id || 'VSM-CSE-SK01',
+            subject_code: 'CS501',
+            subject_name: 'Machine Learning',
+            room_no: savedFaculty.room_no || 'Room 304',
+            frequency_khz: 19.25
+          })
+        });
+      } catch(e) {}
+      startUltrasonicBroadcast();
+    }
+    syncSession();
+  }
+
+  // mic listener
+  async function toggleMicListener() {
+    initAudioEngine();
+    const btnMicText = document.getElementById('btn-mic-text');
+    const modeBadge = document.getElementById('fsk-mode-badge');
+
+    if (!isMicListening) {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const micSource = audioCtx.createMediaStreamSource(micStream);
+        micSource.connect(analyser);
+        isMicListening = true;
+        if (btnMicText) btnMicText.textContent = 'Stop Mic Listener';
+        if (modeBadge) modeBadge.textContent = 'Live Room Microphone Input';
+        startCanvasVisualizer();
+      } catch(err) {
+        alert('Microphone access note: ' + err.message);
+      }
+    } else {
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      isMicListening = false;
+      if (btnMicText) btnMicText.textContent = 'Listen to Room Mic';
+      if (modeBadge) modeBadge.textContent = 'Web Audio FSK Synthesizer';
+    }
+  }
+
+  // reset session
+  async function resetRosterSession() {
+    if (confirm('Clear all attendance records for this session to start a clean live test?')) {
+      try {
+        const res = await fetch('/api/session/reset', { method: 'POST' });
+        const data = await res.json();
+        alert(data.message || 'Roster cleared!');
+        syncRoster();
+      } catch(e) {
+        alert('Failed to reset session');
+      }
+    }
+  }
+
+  async function finalizeSession() {
+    if (confirm('Are you sure you want to finalize this class session and freeze attendance?')) {
+      await fetch('/api/session/stop', { method: 'POST' });
+      stopUltrasonicBroadcast();
+      alert('Session successfully finalized! Downloading official VTU Report CSV...');
+      window.location.href = '/api/export/vtu-report';
+    }
+  }
+
+    async function simulateAttendance() {
+    const btn = document.getElementById('btn-simulate-checkin');
+    const btnText = document.getElementById('btn-simulate-text');
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.textContent = 'Simulating...';
+
+    try {
+      const res = await fetch('/api/session/simulate-checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: 5 })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-5 right-5 z-50 bg-secondary-container/95 border border-secondary text-on-secondary-container px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 backdrop-blur-md animate-bounce';
+        toast.innerHTML = `
+          <span class="material-symbols-outlined text-secondary text-2xl">verified</span>
+          <div class="text-xs font-mono">
+            <p class="font-bold text-secondary">${data.message}</p>
+            <p class="text-on-surface-variant">${data.simulated_students ? data.simulated_students.join(', ') : 'Roster synced'}</p>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+        await syncRoster();
+      } else {
+        alert(data.message || 'Simulation encountered an error.');
+      }
+    } catch(err) {
+      alert('Network simulation failed: ' + err.message);
+    } finally {
+      if (btn) btn.disabled = false;
+      if (btnText) btnText.textContent = 'Simulate Check-in';
+    }
+  }
+
+    // emergency qr
+    let isQRModalOpen = false;
+  let lastQRToken = '';
+
+  function openEmergencyQRModal() {
+    const modal = document.getElementById('emergency-qr-modal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    isQRModalOpen = true;
+    refreshEmergencyQR();
+  }
+
+  function closeEmergencyQRModal() {
+    const modal = document.getElementById('emergency-qr-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    isQRModalOpen = false;
+  }
+
+  async function refreshEmergencyQR() {
+    try {
+      const res = await fetch('/api/session/active');
+      const data = await res.json();
+      if (data.is_active && data.session) {
+        updateQRModalPayload(data.session);
+      } else {
+        updateQRModalPayload({
+          subject_code: 'CS501',
+          subject_name: 'Machine Learning',
+          current_token: '8FF1',
+          seconds_left: 15,
+          security_hash: '0x882AFD01-VTU'
+        });
+      }
+    } catch(e) {}
+  }
+
+  function updateQRModalPayload(session) {
+    if (!session) return;
+    const qrImg = document.getElementById('emergency-qr-img');
+    const courseEl = document.getElementById('eqr-course-code');
+    const tokenEl = document.getElementById('eqr-token-display');
+    const countEl = document.getElementById('eqr-countdown');
+    const hashEl = document.getElementById('eqr-hash-display');
+
+    if (courseEl) courseEl.textContent = `${session.subject_code} - ${session.subject_name}`;
+    if (tokenEl) tokenEl.textContent = `#${session.current_token}`;
+    if (countEl) countEl.textContent = `${session.seconds_left}s`;
+    if (hashEl && session.security_hash) hashEl.textContent = `#${session.security_hash}`;
+
+    if (qrImg && session.current_token !== lastQRToken) {
+      lastQRToken = session.current_token;
+      const qrPayload = JSON.stringify({
+        portal: 'SonicAttend-VTU',
+        course: session.subject_code,
+        token: session.current_token,
+        channel: 'ACOUSTIC_FALLBACK_OPTICAL',
+        timestamp: Date.now()
+      });
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrPayload)}&margin=4`;
+    }
+  }
+
+    // canvas visualizer
+    function startCanvasVisualizer() {
+    const canvas = document.getElementById('fskVisualizerCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width || 600;
+    const h = rect.height || 112;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
+
+    const bufferLength = analyser ? analyser.frequencyBinCount : 256;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      animId = requestAnimationFrame(draw);
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid background
+      ctx.strokeStyle = 'rgba(71, 70, 79, 0.2)';
+      ctx.lineWidth = 1;
+      for (let y = 0; y < h; y += 22) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      if (analyser && (isBroadcasting || isMicListening)) {
+        analyser.getByteFrequencyData(dataArray);
+
+        let maxVal = 0;
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
+          if (dataArray[i] > maxVal) maxVal = dataArray[i];
+        }
+        const avg = sum / bufferLength;
+        const snr = avg > 0 ? Math.round(20 * Math.log10((maxVal + 1) / (avg + 1))) : 0;
+        const snrEl = document.getElementById('fsk-snr-reading');
+        if (snrEl && isBroadcasting) {
+          snrEl.textContent = `SNR: +${Math.max(18, snr + 14)} dB`;
+        }
+
+        // Draw glowing frequency curve
+        const gradient = ctx.createLinearGradient(0, h, 0, 0);
+        gradient.addColorStop(0, 'rgba(0, 165, 114, 0.05)');
+        gradient.addColorStop(0.5, 'rgba(78, 222, 163, 0.35)');
+        gradient.addColorStop(1, 'rgba(76, 215, 246, 0.9)');
+
+        ctx.fillStyle = gradient;
+        ctx.strokeStyle = '#4edea3';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#4edea3';
+        ctx.shadowBlur = 8;
+
+        ctx.beginPath();
+        ctx.moveTo(0, h);
+
+        const sliceWidth = w / bufferLength;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 255.0;
+          const y = h - (v * (h - 8));
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+          x += sliceWidth;
+        }
+
+        ctx.lineTo(w, h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Update physical sub-channel meter heights
+        updateFrequencyMeters(dataArray, bufferLength);
+      } else {
+        // Flatline idle baseline
+        ctx.strokeStyle = 'rgba(78, 222, 163, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, h - 8);
+        ctx.lineTo(w, h - 8);
+        ctx.stroke();
+        resetFrequencyMeters();
+      }
+    }
+
+    if (animId) cancelAnimationFrame(animId);
+    draw();
+  }
+
+  function updateFrequencyMeters(dataArray, bufferLength) {
+    if (!audioCtx) return;
+    const nyquist = audioCtx.sampleRate / 2;
+
+    const meters = [
+      { id: 'meter-175', freq: 17500 },
+      { id: 'meter-178', freq: 17800 },
+      { id: 'meter-180', freq: 18000 },
+      { id: 'meter-185', freq: 18500 },
+      { id: 'meter-190', freq: 19000 },
+      { id: 'meter-1925', freq: 19250 },
+      { id: 'meter-195', freq: 19500 },
+      { id: 'meter-198', freq: 19800 }
+    ];
+
+    meters.forEach(m => {
+      const el = document.getElementById(m.id);
+      if (!el) return;
+      const bin = Math.min(bufferLength - 1, Math.max(0, Math.round((m.freq / nyquist) * bufferLength)));
+      const energy = dataArray[bin] || (isBroadcasting ? (m.freq === 19250 ? 220 : 60) : 0);
+      const heightPx = Math.max(4, Math.round((energy / 255) * 44));
+      el.style.height = `${heightPx}px`;
+    });
+  }
+
+  function resetFrequencyMeters() {
+    ['meter-175','meter-178','meter-180','meter-185','meter-190','meter-1925','meter-195','meter-198'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.height = '4px';
+    });
+  }
+
+    // backend sync
+    async function syncSession() {
+    try {
+      const res = await fetch('/api/session/active');
+      const data = await res.json();
+      if (data.is_active && data.session) {
+        const tokenDisplay = document.getElementById('lec-token-display');
+        const timerDisplay = document.getElementById('lec-timer-display');
+        const circle = document.getElementById('lec-timer-circle');
+
+        if (tokenDisplay) tokenDisplay.textContent = `#${data.session.current_token}`;
+        if (timerDisplay) timerDisplay.textContent = `${data.session.seconds_left}s`;
+        if (circle) {
+          const pct = data.session.seconds_left / 15;
+          circle.style.strokeDashoffset = Math.round(264 * (1 - pct));
+        }
+        if (isQRModalOpen) {
+          updateQRModalPayload(data.session);
+        }
+      }
+    } catch (e) {}
+  }
+
+  async function syncRoster() {
+    try {
+      const res = await fetch('/api/session/roster');
+      const data = await res.json();
+      if (data.success) {
+        const statPresent = document.getElementById('stat-present-count');
+        const statTotal = document.getElementById('stat-total-count');
+        const statAbsent = document.getElementById('stat-absent-count');
+        const statQuorum = document.getElementById('stat-quorum-pct');
+
+        const absentCount = Math.max(0, data.total_students - data.present_count);
+        if (statPresent) statPresent.textContent = data.present_count;
+        if (statTotal) statTotal.textContent = data.total_students;
+        if (statAbsent) statAbsent.textContent = absentCount;
+        if (statQuorum) statQuorum.textContent = `Quorum: ${data.attendance_percentage}%`;
+
+        // Update dynamic filter button and pagination summary
+        const btnFilterAll = document.getElementById('btn-filter-all-roster');
+        if (btnFilterAll) btnFilterAll.textContent = `All (${data.total_students})`;
+
+        const footerSummary = document.getElementById('roster-footer-summary');
+        if (footerSummary) {
+          footerSummary.innerHTML = `Showing <strong class="text-on-surface">${data.records ? data.records.length : 0}</strong> of <strong class="text-on-surface">${data.total_students}</strong> registered students in ${data.session ? data.session.subject_code : 'class'}`;
+        }
+
+        const absentPending = document.getElementById('stat-absent-pending');
+        if (absentPending) absentPending.textContent = `${absentCount} pending sync`;
+
+        const tbody = document.getElementById('roster-tbody');
+        if (tbody) {
+          currentRosterRecords = data.records || [];
+        const btnVer = document.getElementById("btn-filter-verified");
+        const btnPen = document.getElementById("btn-filter-pending");
+        if (btnVer) btnVer.textContent = `Verified (${data.present_count})`;
+        if (btnPen) btnPen.textContent = `Pending (${absentCount})`;
+        if (data.records && data.records.length > 0) {
+            tbody.innerHTML = data.records.map((r, idx) => {
+              const initials = r.student_name ? r.student_name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'ST';
+              const isPresent = r.status === 'PRESENT';
+              return `
+                <tr class="hover:bg-surface-container/60 transition-colors">
+                  <td class="py-3.5 px-4 text-center font-mono text-outline">${String(idx + 1).padStart(2, '0')}</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs text-secondary border border-secondary/30">
+                        ${initials}
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-bold text-on-surface text-body-md font-body-md">${r.student_name}</span>
+                        <span class="font-mono text-xs text-primary font-semibold">${r.usn}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-on-surface-variant">
+                    <div class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs text-secondary">schedule</span>
+                      <span>${r.timestamp.split(' ')[1] || r.timestamp}</span>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-1.5 text-xs text-on-surface font-mono">
+                      <span class="material-symbols-outlined text-xs text-secondary">phonelink_lock</span>
+                      <span>${r.device_id || 'DEV-82A1'}</span>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 text-center">
+                    <span class="font-mono text-xs font-bold text-tertiary">#${r.acoustic_token}</span>
+                  </td>
+                  <td class="py-3.5 px-4 text-center">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-label-sm ${isPresent ? 'bg-secondary-container/40 text-secondary border border-secondary/30' : 'bg-error-container/40 text-error border border-error/30'} font-bold">
+                      <span class="w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-secondary' : 'bg-error'}"></span>
+                      ${isPresent ? 'Present - Ultrasonic' : 'Rejected'}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <span class="material-symbols-outlined text-secondary text-sm">verified</span>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="7" class="py-12 text-center text-on-surface-variant font-mono">
+                  <div class="flex flex-col items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">hearing</span>
+                    <span class="text-sm font-semibold text-on-surface">Live Acoustic Roster Active (19.25 kHz)</span>
+                    <span class="text-xs text-outline">No students checked in yet. Waiting for acoustic sync...</span>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Initialize on load
+  window.addEventListener('load', () => {
+    initAudioEngine();
+    startUltrasonicBroadcast();
+    syncSession();
+    syncRoster();
+    setInterval(syncSession, 1000);
+    setInterval(syncRoster, 2500);
+  });
+
+  // course change
+  async function onClassroomCourseChanged(courseCode) {
+    try {
+      const res = await fetch('/api/courses');
+      const raw = await res.json();
+      const courses = raw.courses || raw;
+      const course = courses.find(c => c.course_code === courseCode);
+      if (course) {
+        // Start session for selected course
+        await fetch('/api/session/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            faculty_id: savedFaculty.faculty_id || 'VSM-CSE-SK01',
+            subject_code: course.course_code,
+            subject_name: course.course_name,
+            room_no: course.room_no,
+            frequency_khz: 19.25
+          })
+        });
+
+        // Update UI
+        const headerTitle = document.querySelector('h1.text-headline-md');
+        if (headerTitle) {
+          headerTitle.textContent = `${course.semester} - ${course.course_code}: ${course.course_name} • ${course.room_no}`;
+        }
+        syncSession();
+        syncRoster();
+      }
+    } catch(e) {
+      console.warn("Course switch error:", e);
+    }
+  }
+
+  // load courses
+  async function populateConsoleCourses() {
+    try {
+      const res = await fetch('/api/courses');
+      const raw = await res.json();
+      const courses = raw.courses || raw;
+      const select = document.getElementById('active-course-select');
+      if (select && Array.isArray(courses) && courses.length > 0) {
+        select.innerHTML = courses.map(c => `
+          <option value="${c.course_code}" ${c.course_code === 'CS501' ? 'selected' : ''}>
+            ${c.course_code}: ${c.course_name} (${c.room_no})
+          </option>
+        `).join('');
+      }
+    } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', populateConsoleCourses);
+
+  function facultySignOut() {
+    if (confirm('Sign out from Lecturer Command Console?')) {
+      localStorage.removeItem('current_faculty');
+      window.location.href = 'lecturer_login.html';
+    }
+  }
+
+  // roster filter
+  let currentRosterRecords = [];
+  let currentFilterStatus = 'ALL';
+
+  function setRosterFilter(status) {
+    currentFilterStatus = status;
+    const btnAll = document.getElementById('btn-filter-all-roster');
+    const btnVer = document.getElementById('btn-filter-verified');
+    const btnPen = document.getElementById('btn-filter-pending');
+
+    [btnAll, btnVer, btnPen].forEach(b => {
+      if (b) {
+        b.className = "px-2.5 py-1 rounded hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer";
+      }
+    });
+
+    if (status === 'ALL' && btnAll) btnAll.className = "px-2.5 py-1 rounded bg-surface-container text-on-surface font-semibold shadow-sm cursor-pointer";
+    if (status === 'VERIFIED' && btnVer) btnVer.className = "px-2.5 py-1 rounded bg-surface-container text-secondary font-semibold shadow-sm cursor-pointer";
+    if (status === 'PENDING' && btnPen) btnPen.className = "px-2.5 py-1 rounded bg-surface-container text-error font-semibold shadow-sm cursor-pointer";
+
+    filterRosterTable();
+  }
+
+  function filterRosterTable() {
+    const query = (document.getElementById('roster-search-input')?.value || '').trim().toLowerCase();
+    const tbody = document.getElementById('roster-tbody');
+    if (!tbody || !currentRosterRecords) return;
+
+    let filtered = currentRosterRecords.filter(r => {
+      const matchQuery = !query || r.student_name.toLowerCase().includes(query) || r.usn.toLowerCase().includes(query);
+      if (!matchQuery) return false;
+      if (currentFilterStatus === 'VERIFIED') return r.status === 'PRESENT';
+      if (currentFilterStatus === 'PENDING') return r.status !== 'PRESENT';
+      return true;
+    });
+
+    if (filtered.length > 0) {
+      tbody.innerHTML = filtered.map((r, idx) => {
+        const initials = r.student_name ? r.student_name.split(' ').map(n => n[0]).join('').substring(0, 2) : 'ST';
+        const isPresent = r.status === 'PRESENT';
+        return `
+          <tr class="hover:bg-surface-container/60 transition-colors animate-fade-in">
+            <td class="py-3.5 px-4 text-center font-mono text-outline">${String(idx + 1).padStart(2, '0')}</td>
+            <td class="py-3.5 px-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-bold text-xs text-secondary border border-secondary/30">
+                  ${initials}
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-bold text-on-surface text-body-md font-body-md">${r.student_name}</span>
+                  <span class="font-mono text-xs text-primary font-semibold">${r.usn}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-3.5 px-4 font-mono text-on-surface-variant">
+              <div class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-secondary">schedule</span>
+                <span>${r.timestamp.split(' ')[1] || r.timestamp}</span>
+              </div>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="flex items-center gap-1.5 text-xs text-on-surface font-mono">
+                <span class="material-symbols-outlined text-xs text-secondary">phonelink_lock</span>
+                <span>${r.device_id || 'DEV-82A1'}</span>
+              </div>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="font-mono text-xs font-bold text-tertiary">#${r.acoustic_token}</span>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-label-sm ${isPresent ? 'bg-secondary-container/40 text-secondary border border-secondary/30' : 'bg-error-container/40 text-error border border-error/30'} font-bold">
+                <span class="w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-secondary' : 'bg-error'}"></span>
+                ${isPresent ? 'Present - Ultrasonic' : 'Rejected'}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <span class="material-symbols-outlined text-secondary text-sm">verified</span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } else {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="py-8 text-center text-on-surface-variant font-mono">
+            ${currentRosterRecords.length === 0 ? 'No attendance records yet for this session.' : 'No matching students found for "' + query + '".'}
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+</script>
+</body></html>

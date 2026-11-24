@@ -1,0 +1,361 @@
+<project_specification>
+  <metadata>
+    <project_name>SonicAttend</project_name>
+    <version>2.0.0</version>
+    <institution>VSM's S. R. Kittoor Institute of Technology (VSMSRKITE), Nipani</institution>
+    <department>Department of Computer Science &amp; Engineering</department>
+    <affiliation>Visvesvaraya Technological University (VTU), Belagavi</affiliation>
+    <target_environment>Localhost / Hostinger VPS / cPanel Python WSGI</target_environment>
+  </metadata>
+
+  <system_role>
+    You are an expert full-stack engineer and cybersecurity specialist. Your goal is to build, extend, or deploy "SonicAttend", an air-gapped, proxy-proof classroom attendance platform that uses inaudible ultrasonic acoustic tones (18.5 kHz - 19.8 kHz) and cryptographic device binding.
+    Code standards: Write clean, modular, production-ready code. Do NOT include obvious AI-generated comments, robotic divider banners (such as repeated equal signs), or textbook explanations. Follow PEP-8 for Python and clean modern standards for JavaScript and HTML5.
+  </system_role>
+
+  <problem_statement>
+    Traditional attendance systems suffer from serious flaws:
+    1. Paper roll calls consume 10-15 minutes and allow proxy sign-ins.
+    2. Static QR codes are photographed and forwarded to absent students via WhatsApp.
+    3. Biometric kiosks cause 60+ student bottlenecks at classroom doors and have hardware maintenance issues.
+    4. Bluetooth (BLE) / Wi-Fi signals easily penetrate brick/concrete walls (30-50m range), allowing proxy from adjacent rooms or canteens.
+
+    SonicAttend solves this with zero extra hardware:
+    - High-frequency sound waves (>18 kHz) cannot penetrate solid brick walls or closed doors, guaranteeing physical classroom presence.
+    - Rotating TOTP tokens (15-second epoch) prevent relay attacks, and messaging app audio codecs (Opus, AAC) cut off sound above 16 kHz.
+    - Hardware Fingerprinting permanently locks 1 student USN to 1 physical smartphone.
+  </problem_statement>
+
+  <technology_stack>
+    <backend>
+      <runtime>Python 3.10+</runtime>
+      <framework>Flask</framework>
+      <database>SQLite3 (sonicattend.db with WAL mode)</database>
+      <security>HMAC-SHA256, SHA256 Password Hashing, Session Seeds</security>
+      <wsgi_server>Gunicorn (Linux) / Waitress (Windows) / Passenger WSGI (Hostinger cPanel)</wsgi_server>
+    </backend>
+    <frontend>
+      <markup>HTML5 (PWA-ready mobile viewport)</markup>
+      <styling>Tailwind CSS (CDN with form &amp; container-queries plugins)</styling>
+      <icons>Google Material Symbols Outlined</icons>
+      <typography>Inter, Plus Jakarta Sans, JetBrains Mono</typography>
+      <audio_engine>HTML5 Web Audio API (OscillatorNode, GainNode, AnalyserNode, MediaStreamAudioSourceNode)</audio_engine>
+      <visualizer>HTML5 Canvas (2D FFT Spectral Curve &amp; Sub-carrier LED Bars)</visualizer>
+    </frontend>
+  </technology_stack>
+
+  <acoustic_protocol>
+    <frequency_allocation>
+      <carrier primary="true" frequency="19250">19.25 kHz Primary Beacon Tone</carrier>
+      <shift_tone_0 frequency="18500">18.50 kHz FSK Shift Tone 0</shift_tone_0>
+      <shift_tone_1 frequency="18800">18.80 kHz FSK Shift Tone 1</shift_tone_1>
+      <shift_tone_2 frequency="19000">19.00 kHz FSK Shift Tone 2 (Pilot Synced)</shift_tone_2>
+      <shift_tone_3 frequency="19500">19.50 kHz FSK Shift Tone 3</shift_tone_3>
+      <shift_tone_4 frequency="19800">19.80 kHz FSK Shift Tone 4</shift_tone_4>
+    </frequency_allocation>
+    <audio_parameters>
+      <gain_volume>0.12 (Inaudible, non-distorting, human-safe level)</gain_volume>
+      <fft_size>512</fft_size>
+      <smoothing_time_constant>0.7</smoothing_time_constant>
+      <token_window_seconds>15</token_window_seconds>
+      <token_algorithm>HMAC-SHA256(SecretSeed, EpochTime / 15) formatted as 4-character Hex (#8FF1)</token_algorithm>
+      <grace_period>+/- 1 step (15s tolerance for clock drift)</grace_period>
+    </audio_parameters>
+  </acoustic_protocol>
+
+  <anti_proxy_security_matrix>
+    <defense_layers>
+      <layer_1>
+        <attack>Remote Proxy (Student in hostel/canteen)</attack>
+        <defense>Inaudible ultrasonic sound cannot cross classroom concrete walls. WhatsApp calls cut frequencies above 16 kHz.</defense>
+      </layer_1>
+      <layer_2>
+        <attack>Multi-Account Buddy Punching (1 phone logging into friend's account)</attack>
+        <defense>Cryptographic Hardware Binding: Each USN is bound to a client-generated UUID/Fingerprint (DEV-XXXX). Non-matching devices return HTTP 403 PROXY_REJECTED.</defense>
+      </layer_2>
+      <layer_3>
+        <attack>Physical Device Smuggling (Student brings absent friend's physical phone)</attack>
+        <defense>
+          1. Ultrasonic Acoustic Attenuation: 19 kHz waves are heavily absorbed by denim pockets and backpacks.
+          2. Audio SNR Filter: SNR &lt; 15 dB rejected with error "Keep phone open on desk".
+          3. Short Broadcast Window: Faculty keeps broadcast active for only 60-90 seconds.
+          4. Front Camera Selfie Verification (1-second liveness check).
+        </defense>
+      </layer_3>
+    </defense_layers>
+  </anti_proxy_security_matrix>
+
+  <database_schema>
+    <table name="students">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS students (
+            usn TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            branch TEXT DEFAULT 'Computer Science &amp; Engineering',
+            semester TEXT DEFAULT '5th Sem',
+            mobile TEXT NOT NULL,
+            password_hash TEXT NOT NULL,
+            bound_device_id TEXT NOT NULL,
+            device_name TEXT DEFAULT 'Pixel 8 (Registered Phone)',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      </ddl>
+    </table>
+    <table name="faculty">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS faculty (
+            faculty_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            mobile TEXT NOT NULL,
+            department TEXT DEFAULT 'Dept of Computer Science &amp; Engineering',
+            designation TEXT DEFAULT 'Assistant Professor',
+            subject TEXT DEFAULT 'CS501 - Machine Learning',
+            password_hash TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      </ddl>
+    </table>
+    <table name="class_sessions">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS class_sessions (
+            session_id TEXT PRIMARY KEY,
+            faculty_id TEXT NOT NULL,
+            subject_code TEXT NOT NULL,
+            subject_name TEXT NOT NULL,
+            room_no TEXT NOT NULL,
+            frequency_khz REAL DEFAULT 19.25,
+            secret_seed TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      </ddl>
+    </table>
+    <table name="attendance_records">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS attendance_records (
+            record_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT NOT NULL,
+            usn TEXT NOT NULL,
+            student_name TEXT NOT NULL,
+            subject_code TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            status TEXT NOT NULL,
+            device_id TEXT NOT NULL,
+            device_verified INTEGER DEFAULT 1,
+            acoustic_token TEXT NOT NULL,
+            FOREIGN KEY (usn) REFERENCES students(usn),
+            FOREIGN KEY (session_id) REFERENCES class_sessions(session_id)
+        );
+      </ddl>
+    </table>
+    <table name="courses">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS courses (
+            course_code TEXT PRIMARY KEY,
+            course_name TEXT NOT NULL,
+            faculty_name TEXT NOT NULL,
+            faculty_id TEXT NOT NULL,
+            room_no TEXT NOT NULL,
+            credits INTEGER DEFAULT 4
+        );
+      </ddl>
+    </table>
+    <table name="timetable">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS timetable (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            day_of_week TEXT NOT NULL,
+            period_no INTEGER NOT NULL,
+            course_code TEXT NOT NULL,
+            course_name TEXT NOT NULL,
+            faculty_name TEXT NOT NULL,
+            room_no TEXT NOT NULL,
+            start_time TEXT NOT NULL,
+            end_time TEXT NOT NULL,
+            is_lab INTEGER DEFAULT 0
+        );
+      </ddl>
+    </table>
+    <table name="device_rebinding_tickets">
+      <ddl>
+        CREATE TABLE IF NOT EXISTS device_rebinding_tickets (
+            ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usn TEXT NOT NULL,
+            student_name TEXT NOT NULL,
+            old_device_id TEXT NOT NULL,
+            new_device_id TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            status TEXT DEFAULT 'PENDING_HOD_APPROVAL',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usn) REFERENCES students(usn)
+        );
+      </ddl>
+    </table>
+  </database_schema>
+
+  <api_endpoints>
+    <endpoint method="POST" path="/api/student/register">
+      <description>Registers student and permanently locks account to submitting hardware device.</description>
+      <payload>{ "usn": "2VS24CS050", "name": "Pankaj M Babaleshwar", "branch": "CSE", "semester": "5th Sem", "mobile": "9876543210", "password": "...", "device_id": "DEV-82A1", "device_name": "Google Pixel 8" }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/student/login">
+      <description>Authenticates student and validates hardware fingerprint against registered device.</description>
+      <payload>{ "usn": "2VS24CS050", "password": "...", "device_id": "DEV-82A1" }</payload>
+    </endpoint>
+    <endpoint method="GET" path="/api/student/roster/{usn}">
+      <description>Returns student attendance scorecard, VTU compliance (&gt;=75%), subject breakdown, and recent logs.</description>
+    </endpoint>
+    <endpoint method="POST" path="/api/student/rebind-ticket">
+      <description>Submits official phone replacement ticket for HOD approval.</description>
+      <payload>{ "usn": "2VS24CS050", "reason": "Phone upgrade", "old_device_id": "DEV-82A1", "new_device_name": "OnePlus 12" }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/faculty/login">
+      <description>Authenticates lecturer with Faculty ID or Mobile number.</description>
+      <payload>{ "identifier": "9845123456", "password": "..." }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/session/start">
+      <description>Starts classroom broadcast and seeds rotating cryptographic token.</description>
+      <payload>{ "faculty_id": "VSM-CSE-SK01", "subject_code": "CS501", "subject_name": "Machine Learning", "room_no": "Room 304", "frequency_khz": 19.25 }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/session/stop">
+      <description>Stops session broadcast and freezes attendance roster.</description>
+    </endpoint>
+    <endpoint method="GET" path="/api/session/active">
+      <description>Returns active session details, current 15s rotating token, and countdown timer.</description>
+    </endpoint>
+    <endpoint method="GET" path="/api/session/roster">
+      <description>Real-time attendance table with present students, device IDs, tokens, and quorum stats.</description>
+    </endpoint>
+    <endpoint method="POST" path="/api/attendance/mark">
+      <description>Decodes and records attendance if token is within window and device matches.</description>
+      <payload>{ "usn": "2VS24CS050", "token": "8FF1", "device_id": "DEV-82A1" }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/session/simulate-checkin">
+      <description>Simulates real-time ultrasonic attendance for live classroom demos without needing multiple physical phones.</description>
+      <payload>{ "count": 5 }</payload>
+    </endpoint>
+    <endpoint method="POST" path="/api/session/reset">
+      <description>Clears attendance records for active session to allow clean re-testing.</description>
+    </endpoint>
+    <endpoint method="GET" path="/api/export/vtu-sheet">
+      <description>Returns official VTU Belagavi printable attendance sheet with college letterhead, attendance percentage, and signature blocks.</description>
+    </endpoint>
+    <endpoint method="GET" path="/api/export/vtu-report">
+      <description>Exports attendance records as official CSV report.</description>
+    </endpoint>
+  </api_endpoints>
+
+  <frontend_architecture>
+    <screen id="index.html" role="Portal Hub">
+      Contains navigation cards to Student Login, Student Check-in, and Faculty Console with dark cyber aesthetic.
+    </screen>
+    <screen id="lecturer_console.html" role="Faculty Transmitter &amp; Real-time Roster">
+      Features:
+      - 19.25 kHz Web Audio Oscillator synthesizer with start/pause toggles.
+      - 512-point FFT visualizer canvas with sub-channel frequency activity bars.
+      - 15-second radial timer showing live rotating cryptographic token (#8FF1).
+      - Live attendance roster table with search filter (All, Verified, Pending).
+      - 1-Click "Simulate Check-in" button for classroom demonstration.
+      - "Emergency Fallback QR" modal displaying live token, countdown, and cryptographic hash.
+      - "Official VTU Sheet" link for instant printable letterhead PDF.
+      - Bottom fixed toolbar with pb-44 container padding to prevent layout clipping.
+    </screen>
+    <screen id="student_attendance.html" role="Student Mobile PWA">
+      Features 4 dynamic bottom tabs:
+      - Tab 1 (Check-in): Real-time Web Audio mic decoder, acoustic pulse ring, 1-tap check-in, dynamic token sync.
+      - Tab 2 (Schedule): Weekly timetable filterable by Day (Mon-Sat) showing period numbers, room numbers, and active indicator.
+      - Tab 3 (Roster): VTU compliance scorecard (&gt;=75%), subject-wise attendance breakdown bars, and recent verification audit logs.
+      - Tab 4 (Account): Student details, bound hardware fingerprint (#DEV-XXXX), and official HOD device re-binding ticket request workflow.
+    </screen>
+    <screen id="login.html" role="Student Authentication">
+      Hardware fingerprint detection, USN validation, Anti-proxy notice, and auto-redirect to attendance dashboard.
+    </screen>
+    <screen id="lecturer_login.html" role="Faculty Authentication">
+      Faculty mobile/ID authentication, assigned subject selection, and one-click console launch.
+    </screen>
+  </frontend_architecture>
+
+  <deployment_instructions>
+    <target name="Hostinger cPanel Python App (Setup Python App)">
+      <steps>
+        1. Log into Hostinger hPanel / cPanel and open "Setup Python App".
+        2. Create Application:
+           - Python Version: Select Python 3.10 or 3.11.
+           - Application root: `public_html/sonicattend` or `domains/yourdomain/public_html`.
+           - Application URL: select your domain or subdomain (e.g. `attendance.yourcollege.ac.in`).
+           - Application startup file: `passenger_wsgi.py`.
+           - Application Entry point: `application`.
+        3. Upload project files (`app.py`, HTML templates, `logo.png`, `sonicattend.db`).
+        4. Create `passenger_wsgi.py` in the root:
+           ```python
+           import sys, os
+           sys.path.insert(0, os.path.dirname(__file__))
+           from app import app as application
+           ```
+        5. In "Configuration files", install dependencies:
+           ```
+           Flask>=3.0.0
+           Werkzeug>=3.0.0
+           ```
+        6. Enable SSL / HTTPS (Required for Web Audio mic permissions on mobile browsers).
+        7. Click "Restart" in Python App manager.
+      </steps>
+    </target>
+    <target name="Hostinger VPS / Ubuntu Nginx + Gunicorn">
+      <steps>
+        1. SSH into Hostinger VPS: `ssh root@your_vps_ip`.
+        2. Install Python &amp; SQLite: `sudo apt update &amp;&amp; sudo apt install python3 python3-pip python3-venv nginx -y`.
+        3. Clone/Upload project to `/var/www/sonicattend`.
+        4. Setup Virtual Environment:
+           ```bash
+           cd /var/www/sonicattend
+           python3 -m venv venv
+           source venv/bin/activate
+           pip install flask gunicorn
+           ```
+        5. Create Systemd Service `/etc/systemd/system/sonicattend.service`:
+           ```ini
+           [Unit]
+           Description=SonicAttend Flask Service
+           After=network.target
+
+           [Service]
+           User=www-data
+           WorkingDirectory=/var/www/sonicattend
+           ExecStart=/var/www/sonicattend/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 app:app
+           Restart=always
+
+           [Install]
+           WantedBy=multi-user.target
+           ```
+        6. Enable &amp; Start service:
+           ```bash
+           sudo systemctl daemon-reload
+           sudo systemctl start sonicattend
+           sudo systemctl enable sonicattend
+           ```
+        7. Configure Nginx Reverse Proxy with SSL (Certbot Let's Encrypt).
+      </steps>
+    </target>
+    <target name="Localhost Windows Execution">
+      <steps>
+        Double-click `run_server.bat` or run `python app.py` in terminal.
+        Open `http://127.0.0.1:5000/`.
+      </steps>
+    </target>
+  </deployment_instructions>
+
+  <execution_checklist>
+    - [x] Air-gapped Ultrasonic FSK Tone Synthesizer (18.5 - 19.8 kHz Web Audio API).
+    - [x] 15-second Rotating TOTP Token Engine (HMAC-SHA256).
+    - [x] Anti-Proxy Hardware Fingerprinting (1 Device = 1 USN lock).
+    - [x] Dynamic Canvas FFT Audio Visualizer with live spectrum line.
+    - [x] Real-time Attendance Roster with 1-click simulation trigger.
+    - [x] Emergency Acoustic Fallback QR Modal with dynamic countdown.
+    - [x] Official VTU Belagavi Print-Ready Attendance Sheet with college letterhead.
+    - [x] Device Re-binding Ticket Workflow for HOD approval.
+    - [x] De-AI codebase naturalization (0 robotic comments, clean developer syntax).
+    - [ ] Real college weekly timetable ingestion (Mon-Sat period schedule).
+    - [ ] Optional 1-second Camera Selfie Liveness Verification on mobile check-in.
+  </execution_checklist>
+</project_specification>

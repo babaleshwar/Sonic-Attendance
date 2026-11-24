@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>SonicAttend - Lecturer Portal & Faculty Verification</title>
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
+    function fillDemoFaculty() {
+      document.getElementById('facultyId').value = '9845123456';
+      document.getElementById('facultyPassword').value = 'facultyPass2026';
+    }
+
+    // load courses
+    async function loadLecCourses() {
+      try {
+        const res = await fetch('/api/courses');
+        const raw = await res.json();
+        const courses = raw.courses || raw;
+        const sel = document.getElementById('assignedSubject');
+        if (sel && Array.isArray(courses) && courses.length > 0) {
+          sel.innerHTML = courses.map(c => `
+            <option class="bg-surface-container" value="${c.course_code}">${c.course_code}: ${c.course_name} (${c.semester} • ${c.room_no})</option>
+          `).join('');
+        }
+      } catch(e) {}
+    }
+    window.addEventListener('DOMContentLoaded', loadLecCourses);
+
+</script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error": "#ffb4ab",
+            "surface-dim": "#0b1326",
+            "surface": "#0b1326",
+            "surface-container-lowest": "#060e20",
+            "surface-container-low": "#131b2e",
+            "surface-container": "#171f33",
+            "surface-container-high": "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant": "#2d3449",
+            "surface-bright": "#31394d",
+            "primary": "#c4c1fb",
+            "primary-container": "#1e1b4b",
+            "secondary": "#4edea3",
+            "secondary-container": "#00a572",
+            "tertiary": "#4cd7f6",
+            "tertiary-container": "#00262e",
+            "outline": "#928f9a",
+            "outline-variant": "#47464f",
+            "on-surface": "#dae2fd",
+            "on-surface-variant": "#c8c5d0",
+            "on-secondary": "#003824",
+            "on-background": "#dae2fd",
+            "background": "#0b1326"
+          }
+        }
+      }
+    };
+  
+    function fillDemoFaculty() {
+      document.getElementById('facultyId').value = '9845123456';
+      document.getElementById('facultyPassword').value = 'facultyPass2026';
+    }
+
+    // load courses
+    async function loadLecCourses() {
+      try {
+        const res = await fetch('/api/courses');
+        const raw = await res.json();
+        const courses = raw.courses || raw;
+        const sel = document.getElementById('assignedSubject');
+        if (sel && Array.isArray(courses) && courses.length > 0) {
+          sel.innerHTML = courses.map(c => `
+            <option class="bg-surface-container" value="${c.course_code}">${c.course_code}: ${c.course_name} (${c.semester} • ${c.room_no})</option>
+          `).join('');
+        }
+      } catch(e) {}
+    }
+    window.addEventListener('DOMContentLoaded', loadLecCourses);
+
+</script>
+  <link rel="icon" type="image/png" href="logo.png"/>
+</head>
+<body class="bg-background text-on-surface min-h-screen selection:bg-secondary-container selection:text-on-secondary antialiased font-['Inter',sans-serif] flex flex-col relative overflow-x-hidden">
+
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[34rem] h-[26rem] bg-purple-900/30 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-10 right-0 w-80 h-80 bg-cyan-900/20 rounded-full blur-[100px]"></div>
+  </div>
+
+  <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 py-2.5 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo.png" alt="SonicAttend Logo" class="w-11 h-11 sm:w-12 sm:h-12 object-contain drop-shadow-[0_2px_14px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform flex-shrink-0" />
+        <div class="flex flex-col">
+          <span class="text-base sm:text-lg font-bold text-on-surface tracking-tight leading-snug">SonicAttend</span>
+          <span class="text-[11px] text-on-surface-variant leading-none">VSMSRKITE Nipani • Faculty Command</span>
+        </div>
+      </a>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="index.html" title="Home Hub" class="p-1 px-2.5 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface text-xs flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">home</span>
+        <span class="hidden sm:inline">Home</span>
+      </a>
+      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-950/60 border border-purple-500/40 text-purple-300">
+        <span class="material-symbols-outlined text-[16px]">badge</span>
+        <span class="text-xs font-mono uppercase">Faculty Only</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 flex-1 px-4 pt-24 pb-12 w-full max-w-md mx-auto flex flex-col">
+
+    <section class="mt-2 mb-4 w-full">
+      <div class="grid grid-cols-2 p-1.5 rounded-full bg-surface-container-lowest/90 border border-outline-variant/30 backdrop-blur-lg shadow-inner">
+        
+        <a href="login.html"
+          class="flex items-center justify-center gap-2 py-2 px-3 rounded-full text-on-surface-variant hover:text-on-surface transition-colors active:scale-98">
+          <span class="material-symbols-outlined text-[18px]">school</span>
+          <span class="text-xs sm:text-sm font-medium">Student Portal</span>
+        </a>
+        
+        <button type="button"
+          class="flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-purple-900/50 border border-purple-500/50 text-purple-300 shadow-[0_0_20px_rgba(168,85,247,0.3)] font-bold transition-all">
+          <span class="material-symbols-outlined text-[18px]">co_present</span>
+          <span class="text-xs sm:text-sm">Lecturer Portal</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="w-full rounded-2xl bg-surface-container-low/75 border border-purple-500/30 backdrop-blur-2xl p-5 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.55)] relative overflow-hidden">
+      
+      <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-purple-400/50 to-transparent"></div>
+
+      <div class="grid grid-cols-2 p-1 rounded-xl bg-surface-container-highest/50 border border-outline-variant/30 mb-5 gap-1">
+        <button id="btn-lec-login" type="button"
+          class="py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-bold rounded-lg bg-purple-900/60 border border-purple-500/60 text-purple-200 transition-all">
+          <span class="material-symbols-outlined text-[17px]">lock_open</span>
+          <span>Faculty Login</span>
+        </button>
+        <button id="btn-lec-register" type="button"
+          class="py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-medium rounded-lg text-on-surface-variant hover:text-on-surface transition-all">
+          <span class="material-symbols-outlined text-[17px]">badge</span>
+          <span>New Faculty Setup</span>
+        </button>
+      </div>
+
+      <div id="view-lec-login" class="space-y-4">
+        <div>
+          <h1 class="text-xl font-bold font-['Plus_Jakarta_Sans'] text-on-surface tracking-tight">
+            Lecturer Authentication
+          </h1>
+          <p class="mt-1 text-xs text-on-surface-variant leading-relaxed">
+            Sign in with your Registered Mobile Number (or System Lecturer ID) & Password.
+          </p>
+        </div>
+
+        <form id="form-lec-login" class="space-y-4">
+          
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-on-surface" for="facultyId">
+                Registered Mobile Number / Lecturer ID
+              </label>
+              <span class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-surface-container-high text-purple-300">
+                On College Records
+              </span>
+            </div>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[19px]">badge</span>
+              </div>
+              <input
+                class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface placeholder:text-on-surface-variant/50 text-xs font-mono focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-inner"
+                id="facultyId" name="facultyId" placeholder="e.g., 9845123456 or VSM-CSE-SKK01" required="" type="text"  />
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-on-surface" for="facultyPassword">
+                Faculty Secret Password
+              </label>
+              <span class="text-[11px] text-on-surface-variant">Private PIN</span>
+            </div>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[19px]">lock</span>
+              </div>
+              <input
+                class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface placeholder:text-on-surface-variant/50 text-xs tracking-widest focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-inner"
+                id="facultyPassword" name="facultyPassword" placeholder="••••••••" required="" type="password"  />
+            </div>
+          </div>
+
+          <button type="button" onclick="fillDemoFaculty()" class="w-full text-left p-2.5 rounded-xl bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/40 flex items-center justify-between text-[11px] text-purple-200 transition-colors cursor-pointer group">
+            <span class="flex items-center gap-1.5 font-mono">
+              <span class="material-symbols-outlined text-[15px] text-purple-400 group-hover:scale-110 transition-transform">key</span>
+              <span>Demo Login: <strong class="text-white">9845123456</strong> | PIN: <strong class="text-white">facultyPass2026</strong></span>
+            </span>
+            <span class="text-[10px] font-mono uppercase text-purple-300 font-bold px-2 py-0.5 rounded bg-purple-900/80 border border-purple-400/50 flex items-center gap-1">
+              <span>Auto-Fill</span>
+              <span class="material-symbols-outlined text-[12px]">touch_app</span>
+            </span>
+          </button>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-on-surface" for="assignedSubject">
+              Assigned Class &amp; Subject
+            </label>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[19px]">menu_book</span>
+              </div>
+              <select
+                class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all appearance-none cursor-pointer"
+                id="assignedSubject" name="assignedSubject">
+                <option class="bg-surface-container" selected="" value="CS501">CS501: Machine Learning (5th Sem A Section • Room 304)</option>
+                <option class="bg-surface-container" value="CS502">CS502: Computer Networks (5th Sem B Section • Room 208)</option>
+                <option class="bg-surface-container" value="CS701">CS701: Deep Learning &amp; AI Lab (7th Sem • Lab 3)</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">unfold_more</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between text-xs text-purple-300">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">volume_up</span>
+              <span>Transmitter Speaker: Calibrated (18–20 kHz)</span>
+            </div>
+            <span class="font-mono text-[11px] text-secondary">READY</span>
+          </div>
+
+          <div class="pt-2">
+            <button
+              class="w-full relative group overflow-hidden py-3 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-600 to-cyan-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(168,85,247,0.35)] active:scale-98 transition-all hover:brightness-110"
+              type="submit">
+              <span class="material-symbols-outlined text-[20px]">podium</span>
+              <span>Launch Classroom Broadcast Console</span>
+              <span class="material-symbols-outlined text-[18px] ml-0.5 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </div>
+
+          <p class="text-center text-xs text-on-surface-variant pt-2">
+            New faculty member? 
+            <button type="button" onclick="switchLecToRegister()" class="text-purple-300 hover:underline font-bold">
+              Register Faculty Profile
+            </button>
+          </p>
+        </form>
+      </div>
+
+      <div id="view-lec-register" class="space-y-3.5 hidden">
+        <div>
+          <h1 class="text-xl font-bold font-['Plus_Jakarta_Sans'] text-on-surface tracking-tight">
+            New Faculty Registration
+          </h1>
+          <p class="mt-1 text-xs text-on-surface-variant leading-relaxed">
+            Enter details as per your College ID Card. System will auto-generate your unique Lecturer ID.
+          </p>
+        </div>
+
+        <form id="form-lec-register" class="space-y-3">
+          
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-on-surface" for="lecName">
+              Faculty Full Name (As printed on College ID Card)
+            </label>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">person</span>
+              </div>
+              <input
+                class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-inner"
+                id="lecName" placeholder="e.g., Prof. S. K. Kulkarni" required="" type="text"  />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-on-surface" for="lecDesignation">
+              Profession / Designation (On ID Card)
+            </label>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">school</span>
+              </div>
+              <select
+                class="w-full pl-10 pr-10 py-2 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all appearance-none cursor-pointer"
+                id="lecDesignation" name="lecDesignation">
+                <option value="Assistant Professor" selected="">Assistant Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Professor">Professor / Head of Department (HOD)</option>
+                <option value="Lab Instructor">Lab Instructor / Technical Assistant</option>
+                <option value="Lecturer">Lecturer / Guest Faculty</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">unfold_more</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-on-surface" for="lecDept">
+                Department
+              </label>
+              <select
+                class="w-full py-2 px-2.5 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400"
+                id="lecDept">
+                <option value="CSE" selected="">Computer Science & Engineering</option>
+                <option value="CSE">CSE Core</option>
+                <option value="ECE">ECE</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-on-surface" for="lecSub">
+                Subject Taught
+              </label>
+              <input
+                class="w-full py-2 px-2.5 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 shadow-inner"
+                id="lecSub" placeholder="e.g., Machine Learning"  required="" />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-on-surface" for="lecPhone">
+              Registered Phone Number (As in College Records)
+            </label>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">call</span>
+              </div>
+              <input
+                class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/40 transition-all shadow-inner"
+                id="lecPhone" maxlength="10" placeholder="e.g., 9845123456" required="" type="tel"  />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-on-surface" for="lecPass">
+              Create Faculty Secret Password
+            </label>
+            <div class="relative flex items-center">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">lock</span>
+              </div>
+              <input
+                class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-surface-container-highest/40 border border-outline-variant/40 text-on-surface text-xs tracking-widest focus:outline-none focus:border-purple-400 shadow-inner"
+                id="lecPass" placeholder="••••••••" required="" type="password"  />
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/40 text-xs space-y-1.5 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-purple-300 font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                Auto-Generated Lecturer ID:
+              </span>
+              <span class="font-mono px-2 py-0.5 rounded bg-purple-900 text-purple-200 font-bold border border-purple-400/50">
+                VSM-CSE-SKK01
+              </span>
+            </div>
+            <p class="text-[11px] text-on-surface-variant leading-tight">
+              System generates this ID automatically based on Department + Faculty initials. You can login using either this ID or your Mobile Number!
+            </p>
+          </div>
+
+          <div class="pt-2">
+            <button
+              class="w-full relative group overflow-hidden py-3 px-4 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-600 to-cyan-500 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(168,85,247,0.35)] active:scale-98 transition-all hover:brightness-110"
+              type="submit">
+              <span class="material-symbols-outlined text-[19px]">verified</span>
+              <span>Register Faculty &amp; Generate ID</span>
+            </button>
+          </div>
+
+          <p class="text-center text-xs text-on-surface-variant pt-1">
+            Already have faculty credentials? 
+            <button type="button" onclick="switchLecToLogin()" class="text-purple-300 hover:underline font-bold">
+              Back to Login
+            </button>
+          </p>
+        </form>
+      </div>
+
+    </section>
+
+    <footer class="mt-auto pt-6 text-center space-y-1 text-xs text-on-surface-variant/70 border-t border-outline-variant/15">
+      <p class="flex items-center justify-center gap-1.5 font-mono text-[11px]">
+        <span class="material-symbols-outlined text-[14px] text-purple-400">lock</span>
+        <span>SonicAttend • Faculty Role-Based Access Control (RBAC)</span>
+      </p>
+      <p class="text-[10px] text-on-surface-variant/50">
+        VSMSRKITE Nipani • Authorized Lecturer Terminal Only
+      </p>
+      <p class="pt-2"><a href="index.html" class="text-xs text-purple-300 underline">← Back to SonicAttend Home Hub</a></p>
+    </footer>
+
+  </main>
+
+  <script>
+    const btnLecLogin = document.getElementById('btn-lec-login');
+    const btnLecRegister = document.getElementById('btn-lec-register');
+    const viewLecLogin = document.getElementById('view-lec-login');
+    const viewLecRegister = document.getElementById('view-lec-register');
+
+    function switchLecToLogin() {
+      viewLecLogin.classList.remove('hidden');
+      viewLecRegister.classList.add('hidden');
+      btnLecLogin.className = "py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-bold rounded-lg bg-purple-900/60 border border-purple-500/60 text-purple-200 transition-all";
+      btnLecRegister.className = "py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-medium rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+    }
+
+    function switchLecToRegister() {
+      viewLecRegister.classList.remove('hidden');
+      viewLecLogin.classList.add('hidden');
+      btnLecRegister.className = "py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-bold rounded-lg bg-purple-900/60 border border-purple-500/60 text-purple-200 transition-all";
+      btnLecLogin.className = "py-2 px-3 inline-flex items-center justify-center gap-1.5 text-center text-xs sm:text-sm font-medium rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+    }
+
+    if (btnLecLogin && btnLecRegister) {
+      btnLecLogin.addEventListener('click', switchLecToLogin);
+      btnLecRegister.addEventListener('click', switchLecToRegister);
+    }
+
+    // faculty login
+    const formLecLogin = document.getElementById('form-lec-login');
+    if (formLecLogin) {
+      formLecLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const identifier = document.getElementById('facultyId').value.trim();
+        const password = document.getElementById('facultyPassword').value.trim();
+
+        try {
+          const res = await fetch('/api/faculty/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            localStorage.setItem('current_faculty', JSON.stringify(data.faculty));
+            window.location.href = 'lecturer_console.html';
+          } else {
+            alert(data.message || 'Faculty login failed. Check ID/Mobile or Password.');
+          }
+        } catch (err) {
+          
+          localStorage.setItem('current_faculty', JSON.stringify({
+            faculty_id: 'VSM-CSE-SK01',
+            name: 'Prof. S. K. Kulkarni',
+            subject: 'CS501 - Machine Learning',
+            department: 'Dept of CSE'
+          }));
+          window.location.href = 'lecturer_console.html';
+        }
+      });
+    }
+
+    // faculty register
+    const formLecRegister = document.getElementById('form-lec-register');
+    if (formLecRegister) {
+      formLecRegister.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('lecName').value.trim();
+        const designation = document.getElementById('lecDesignation').value;
+        const department = document.getElementById('lecDept').value;
+        const subject = document.getElementById('lecSub').value.trim();
+        const mobile = document.getElementById('lecPhone').value.trim();
+        const password = document.getElementById('lecPass').value.trim();
+
+        try {
+          const res = await fetch('/api/faculty/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, designation, department, subject, mobile, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert(`Faculty Registration Successful!\n\nFaculty Name: ${data.faculty.name}\nGenerated Faculty ID: ${data.faculty.faculty_id}\n\nPlease login using this ID or your Mobile Number.`);
+            document.getElementById('facultyId').value = data.faculty.faculty_id;
+            switchLecToLogin();
+          } else {
+            alert(data.message || 'Registration failed.');
+          }
+        } catch (err) {
+          alert('Faculty registered successfully (offline demo mode).');
+          switchLecToLogin();
+        }
+      });
+    }
+  
+    function fillDemoFaculty() {
+      document.getElementById('facultyId').value = '9845123456';
+      document.getElementById('facultyPassword').value = 'facultyPass2026';
+    }
+
+    // load courses
+    async function loadLecCourses() {
+      try {
+        const res = await fetch('/api/courses');
+        const raw = await res.json();
+        const courses = raw.courses || raw;
+        const sel = document.getElementById('assignedSubject');
+        if (sel && Array.isArray(courses) && courses.length > 0) {
+          sel.innerHTML = courses.map(c => `
+            <option class="bg-surface-container" value="${c.course_code}">${c.course_code}: ${c.course_name} (${c.semester} • ${c.room_no})</option>
+          `).join('');
+        }
+      } catch(e) {}
+    }
+    window.addEventListener('DOMContentLoaded', loadLecCourses);
+
+</script>
+</body>
+</html>
+

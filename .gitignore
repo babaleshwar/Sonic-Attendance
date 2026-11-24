@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+venv/
+env/
+
+# Database backup
+sonicattend_backup.db
+*.bak
+*.tmp
