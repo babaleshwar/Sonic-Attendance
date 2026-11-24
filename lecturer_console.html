@@ -129,12 +129,12 @@
       </button>
 
       <div class="flex items-center gap-1.5 pl-2 border-l border-outline-variant/40">
-        <div class="w-8 h-8 rounded-full bg-purple-900/60 border border-purple-400/50 flex items-center justify-center text-purple-200 font-bold text-xs" title="Prof. S. K. Kulkarni (VSM-CSE-SK01)">
-          SK
+        <div id="facultyAvatar" class="w-8 h-8 rounded-full bg-purple-900/60 border border-purple-400/50 flex items-center justify-center text-purple-200 font-bold text-xs">
+          FC
         </div>
         <div class="hidden xl:flex flex-col text-left">
-          <span class="text-xs font-bold text-on-surface leading-tight">Prof. S. K. Kulkarni</span>
-          <span class="text-[10px] text-on-surface-variant leading-none">Dept of CSE</span>
+          <span id="facultyNameDisplay" class="text-xs font-bold text-on-surface leading-tight">Faculty Member</span>
+          <span id="facultyDeptDisplay" class="text-[10px] text-on-surface-variant leading-none">Dept of CSE</span>
         </div>
         <button onclick="facultySignOut()" title="Sign Out of Faculty Console" class="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors flex items-center justify-center cursor-pointer ml-0.5">
           <span class="material-symbols-outlined text-[18px]">logout</span>
@@ -153,7 +153,7 @@
 <img alt="SonicAttend Logo" class="w-12 h-12 object-contain drop-shadow-[0_2px_12px_rgba(78,222,163,0.3)] flex-shrink-0" src="logo.png"/>
 <div class="flex flex-col">
 <span class="text-headline-sm font-headline-sm text-primary dark:text-primary font-bold">VSMSRKITE CSE</span>
-<span class="text-body-sm font-body-sm text-on-surface-variant">Prof. S. K. Kulkarni</span>
+<span id="sidebarFacultyName" class="text-body-sm font-body-sm text-on-surface-variant">Faculty In-charge</span>
 </div>
 </div>
 
@@ -381,10 +381,7 @@
 <span class="material-symbols-outlined text-base">delete_sweep</span>
 <span>Clear Roster</span>
 </button>
-<button id="btn-simulate-checkin" onclick="simulateAttendance()" class="px-3.5 py-2 rounded-lg bg-secondary/15 hover:bg-secondary/25 border border-secondary/40 text-secondary text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer" title="Simulate student ultrasonic check-in for live classroom demonstration">
-<span class="material-symbols-outlined text-base">group_add</span>
-<span id="btn-simulate-text">Simulate Check-in</span>
-</button>
+
 </div>
 
 <div class="relative flex items-center">
@@ -732,13 +729,26 @@
   let currentFskIndex = 3; // 19250 Hz primary carrier
 
   // Faculty identity from localStorage or default
-  const savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || '{"faculty_id":"VSM-CSE-SK01","name":"Prof. S. K. Kulkarni","subject":"CS501 - Machine Learning","room_no":"Room 304"}');
+  const savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || 'null');
+    if (!savedFaculty || !savedFaculty.faculty_id) {
+      window.location.href = 'lecturer_login.html';
+      return;
+    }
   if (savedFaculty && savedFaculty.name) {
-    const nameEl = document.getElementById('faculty-display-name');
-    if (nameEl) nameEl.textContent = savedFaculty.name;
-    const idEl = document.getElementById('faculty-display-id');
-    if (idEl) idEl.textContent = savedFaculty.faculty_id;
-  }
+      const nameEl = document.getElementById('facultyNameDisplay');
+      const idEl = document.getElementById('facultyIdDisplay');
+      const avatarEl = document.getElementById('facultyAvatar');
+      const sideNameEl = document.getElementById('sidebarFacultyName');
+      const deptEl = document.getElementById('facultyDeptDisplay');
+      if (nameEl) nameEl.textContent = savedFaculty.name;
+      if (sideNameEl) sideNameEl.textContent = savedFaculty.name;
+      if (idEl) idEl.textContent = savedFaculty.faculty_id;
+      if (deptEl && savedFaculty.department) deptEl.textContent = savedFaculty.department;
+      if (avatarEl) {
+        const initials = savedFaculty.name.split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+        avatarEl.textContent = initials || 'FAC';
+      }
+    }
 
   function initAudioEngine() {
     try {
@@ -884,7 +894,7 @@
         if (modeBadge) modeBadge.textContent = 'Live Room Microphone Input';
         startCanvasVisualizer();
       } catch(err) {
-        alert('Microphone access note: ' + err.message);
+        showToast('Microphone access note: ' + err.message, 'info', 'Audio Hardware');
       }
     } else {
       if (micStream) {
@@ -903,10 +913,10 @@
       try {
         const res = await fetch('/api/session/reset', { method: 'POST' });
         const data = await res.json();
-        alert(data.message || 'Roster cleared!');
+        showToast(data.message || 'Session roster cleared successfully.', 'success', 'Session Reset');
         syncRoster();
       } catch(e) {
-        alert('Failed to reset session');
+        showToast('Failed to reset session.', 'error', 'Action Failed');
       }
     }
   }
@@ -915,50 +925,13 @@
     if (confirm('Are you sure you want to finalize this class session and freeze attendance?')) {
       await fetch('/api/session/stop', { method: 'POST' });
       stopUltrasonicBroadcast();
-      alert('Session successfully finalized! Downloading official VTU Report CSV...');
+      showToast('Session finalized! Downloading VTU Attendance CSV...', 'success', 'VTU Report');
       window.location.href = '/api/export/vtu-report';
     }
   }
 
-    async function simulateAttendance() {
-    const btn = document.getElementById('btn-simulate-checkin');
-    const btnText = document.getElementById('btn-simulate-text');
-    if (btn) btn.disabled = true;
-    if (btnText) btnText.textContent = 'Simulating...';
-
-    try {
-      const res = await fetch('/api/session/simulate-checkin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ count: 5 })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-5 right-5 z-50 bg-secondary-container/95 border border-secondary text-on-secondary-container px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 backdrop-blur-md animate-bounce';
-        toast.innerHTML = `
-          <span class="material-symbols-outlined text-secondary text-2xl">verified</span>
-          <div class="text-xs font-mono">
-            <p class="font-bold text-secondary">${data.message}</p>
-            <p class="text-on-surface-variant">${data.simulated_students ? data.simulated_students.join(', ') : 'Roster synced'}</p>
-          </div>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-        await syncRoster();
-      } else {
-        alert(data.message || 'Simulation encountered an error.');
-      }
-    } catch(err) {
-      alert('Network simulation failed: ' + err.message);
-    } finally {
-      if (btn) btn.disabled = false;
-      if (btnText) btnText.textContent = 'Simulate Check-in';
-    }
-  }
-
-    // emergency qr
+    
+    // load faculty qr
     let isQRModalOpen = false;
   let lastQRToken = '';
 
@@ -1431,6 +1404,52 @@
       `;
     }
   }
+
+</script>
+<script>
+
+function showToast(message, type = 'info', title = '') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'fixed top-4 right-4 z-[99999] flex flex-col gap-2.5 max-w-sm w-full px-4 sm:px-0 pointer-events-none';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  const bgBorder = type === 'success' 
+    ? 'bg-slate-900/95 border-emerald-500/50 text-emerald-100 shadow-xl shadow-emerald-950/20'
+    : type === 'error'
+    ? 'bg-slate-900/95 border-rose-500/50 text-rose-100 shadow-xl shadow-rose-950/20'
+    : 'bg-slate-900/95 border-slate-700/60 text-slate-100 shadow-xl shadow-slate-950/20';
+
+  const iconSvg = type === 'success'
+    ? '<svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+    : type === 'error'
+    ? '<svg class="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'
+    : '<svg class="w-5 h-5 text-sky-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+
+  toast.className = `pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border backdrop-blur-md transition-all duration-300 transform -translate-y-2 opacity-0 ${bgBorder}`;
+  toast.innerHTML = `
+    ${iconSvg}
+    <div class="flex-1 min-w-0">
+      ${title ? `<div class="font-semibold text-xs tracking-wider uppercase opacity-80 mb-0.5">${title}</div>` : ''}
+      <div class="text-xs leading-relaxed font-medium break-words">${message}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.remove('-translate-y-2', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+  });
+
+  setTimeout(() => {
+    toast.classList.add('opacity-0', '-translate-y-2');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
 
 </script>
 </body></html>
