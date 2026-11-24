@@ -7,7 +7,7 @@ import io
 import csv
 import random
 from datetime import datetime
-from flask import Flask, request, jsonify, send_from_directory, Response, redirect
+from flask import Flask, request, jsonify, send_from_directory, Response, redirect, send_file
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "sonicattend.db")
@@ -252,6 +252,16 @@ def redirect_faculty_login():
 @app.route("/lecturer_console.html")
 def redirect_faculty_console():
     return redirect("/faculty/console", code=301)
+
+@app.route("/database")
+def serve_database_viewer():
+    return send_from_directory(BASE_DIR, "database.html")
+
+@app.route("/api/db/download")
+def download_db():
+    if os.path.exists(DB_PATH):
+        return send_file(DB_PATH, as_attachment=True, download_name="sonicattend.db")
+    return jsonify({"error": "Database file not found"}), 404
 
 @app.route("/api/db/summary", methods=["GET"])
 def db_summary():
