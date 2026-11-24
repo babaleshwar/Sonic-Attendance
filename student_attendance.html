@@ -259,20 +259,19 @@
 
 <section class="rounded-xl bg-surface-container/60 backdrop-blur-lg border border-outline-variant/30 p-4 relative overflow-hidden">
 <div class="flex items-center justify-between mb-2">
-<div class="flex items-center gap-2">
-<span class="relative flex h-2.5 w-2.5">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+<div id="session-status-container" class="flex items-center gap-2">
+<span id="session-status-dot" class="relative flex h-2.5 w-2.5">
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500"></span>
 </span>
-<span class="text-label-sm font-label-sm uppercase tracking-wider font-bold text-secondary">Session Active</span>
+<span id="session-status-text" class="text-label-sm font-label-sm uppercase tracking-wider font-bold text-slate-400">Syncing Status...</span>
 </div>
-<span class="text-label-sm font-label-sm text-tertiary font-mono bg-tertiary-container/60 px-2 py-0.5 rounded border border-tertiary/20">Beacon: 19.45 kHz</span>
+<span id="session-beacon-badge" class="text-label-sm font-label-sm text-tertiary font-mono bg-tertiary-container/60 px-2 py-0.5 rounded border border-tertiary/20">Beacon: Standby</span>
 </div>
 <div class="flex flex-col">
-<h3 id="session-title" class="text-headline-md font-headline-md text-on-surface font-bold">CS501: Machine Learning</h3>
+<h3 id="session-title" class="text-headline-md font-headline-md text-on-surface font-bold">Waiting for Lecture Broadcast...</h3>
 <p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1.5 mt-0.5">
 <span class="material-symbols-outlined text-[16px] text-primary">meeting_room</span>
-<span id="session-room-faculty">Room 304 • Prof. S. K. Kulkarni</span>
+<span id="session-room-faculty">Faculty will initiate acoustic broadcast in classroom</span>
 </p>
 </div>
 
@@ -971,21 +970,87 @@
     }
   }
 
-    // session checkin
-    async function syncActiveSession() {
+  let studentAudioCtx = null;
+  let studentMicStream = null;
+
+  async function startAcousticListening() {
+    try {
+      studentAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (studentAudioCtx.state === 'suspended') {
+        await studentAudioCtx.resume();
+      }
+      studentMicStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        }
+      });
+      const micSource = studentAudioCtx.createMediaStreamSource(studentMicStream);
+      const analyser = studentAudioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      micSource.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const eqBars = document.querySelectorAll('.eq-bar-1, .eq-bar-2, .eq-bar-3, .eq-bar-4, .eq-bar-5, .eq-bar-6, .eq-bar-7');
+
+      const interval = setInterval(() => {
+        if (!studentMicStream) {
+          clearInterval(interval);
+          return;
+        }
+        analyser.getByteFrequencyData(dataArray);
+        if (eqBars.length > 0) {
+          eqBars.forEach((bar, idx) => {
+            const val = dataArray[idx * 4] || 0;
+            const h = Math.max(6, Math.min(36, Math.round(val / 6)));
+            bar.style.height = `${h}px`;
+          });
+        }
+      }, 50);
+
+      await new Promise(r => setTimeout(r, 1500));
+      clearInterval(interval);
+      if (studentMicStream) {
+        studentMicStream.getTracks().forEach(t => t.stop());
+        studentMicStream = null;
+      }
+      return true;
+    } catch(err) {
+      console.warn("Microphone access note:", err);
+      return false;
+    }
+  }
+
+  // session checkin
+  async function syncActiveSession() {
     try {
       const res = await fetch('/api/session/active');
       const data = await res.json();
+      const statusDot = document.getElementById('session-status-dot');
+      const statusText = document.getElementById('session-status-text');
+      const beaconBadge = document.getElementById('session-beacon-badge');
+      const sessionTitle = document.getElementById('session-title');
+      const sessionRoomFaculty = document.getElementById('session-room-faculty');
+      const tokenPill = document.getElementById('student-token-pill');
+      const freqReading = document.getElementById('student-freq-reading');
+      const tokenTimer = document.getElementById('tokenTimer');
+
       if (data.is_active && data.session) {
         isSessionActive = true;
         currentSessionToken = data.session.current_token;
 
-        const sessionTitle = document.getElementById('session-title');
-        const sessionRoomFaculty = document.getElementById('session-room-faculty');
-        const tokenPill = document.getElementById('student-token-pill');
-        const freqReading = document.getElementById('student-freq-reading');
-        const tokenTimer = document.getElementById('tokenTimer');
-
+        if (statusDot) {
+          statusDot.innerHTML = `
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+          `;
+        }
+        if (statusText) {
+          statusText.textContent = 'Live Session Active';
+          statusText.className = 'text-label-sm font-label-sm uppercase tracking-wider font-bold text-emerald-400';
+        }
+        if (beaconBadge) beaconBadge.textContent = `Carrier: ${(data.session.frequency_khz || 19.25)} kHz`;
         if (sessionTitle) sessionTitle.textContent = `${data.session.subject_code}: ${data.session.subject_name}`;
         if (sessionRoomFaculty) sessionRoomFaculty.textContent = `${data.session.room_no} • Faculty Broadcast Active`;
         if (tokenPill && !isMarked) tokenPill.textContent = `Token: #${currentSessionToken} (Rotating)`;
@@ -993,12 +1058,23 @@
         if (tokenTimer) tokenTimer.textContent = `${data.session.seconds_left}s`;
       } else {
         isSessionActive = false;
-        const sessionTitle = document.getElementById('session-title');
-        const tokenPill = document.getElementById('student-token-pill');
-        if (sessionTitle) sessionTitle.textContent = 'No Active Lecture Broadcast';
+        if (statusDot) {
+          statusDot.innerHTML = `<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500"></span>`;
+        }
+        if (statusText) {
+          statusText.textContent = 'No Active Session';
+          statusText.className = 'text-label-sm font-label-sm uppercase tracking-wider font-bold text-slate-400';
+        }
+        if (beaconBadge) beaconBadge.textContent = 'Beacon: Standby';
+        if (sessionTitle) sessionTitle.textContent = 'Waiting for Lecture Broadcast...';
+        if (sessionRoomFaculty) sessionRoomFaculty.textContent = 'Faculty will initiate acoustic broadcast in classroom';
         if (tokenPill && !isMarked) tokenPill.textContent = 'Token: Standby';
+        if (freqReading) freqReading.textContent = 'Carrier: Inactive';
+        if (tokenTimer) tokenTimer.textContent = '--';
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn('Session sync error:', e);
+    }
   }
 
   // checkin action
@@ -1007,6 +1083,13 @@
     attendanceBtn.addEventListener('click', async () => {
       if (isMarked) {
         showToast(`Attendance already recorded for ${studentName} (${studentUsn}).`, 'info', 'Already Recorded');
+        return;
+      }
+
+      await syncActiveSession();
+
+      if (!isSessionActive) {
+        showToast('No active classroom session right now. Please wait for faculty to start the lecture broadcast.', 'error', 'No Lecture Active');
         return;
       }
 
@@ -1019,69 +1102,57 @@
       attendanceBtn.style.boxShadow = '0 0 60px rgba(6, 182, 212, 0.85)';
       attendanceBtn.style.borderColor = '#06b6d4';
 
-      setTimeout(async () => {
-        if (btnLabel) btnLabel.textContent = 'DECODING FSK';
-        if (icon) icon.textContent = 'sensors';
-        attendanceBtn.style.boxShadow = '0 0 60px rgba(78, 222, 163, 0.95)';
-        attendanceBtn.style.borderColor = '#4edea3';
+      // Start actual microphone capture for ultrasonic frequencies
+      await startAcousticListening();
 
-        try {
-          await syncActiveSession();
+      if (btnLabel) btnLabel.textContent = 'DECODING FSK';
+      if (icon) icon.textContent = 'sensors';
+      attendanceBtn.style.boxShadow = '0 0 60px rgba(78, 222, 163, 0.95)';
+      attendanceBtn.style.borderColor = '#4edea3';
 
-          const res = await fetch('/api/attendance/mark', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              usn: studentUsn,
-              token: currentSessionToken,
-              device_id: studentDevId
-            })
-          });
+      try {
+        const res = await fetch('/api/attendance/mark', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usn: studentUsn,
+            token: currentSessionToken,
+            device_id: studentDevId
+          })
+        });
 
-          const data = await res.json();
-          attendanceBtn.classList.remove('scale-95');
+        const data = await res.json();
+        attendanceBtn.classList.remove('scale-95');
 
-          if (res.ok && data.success) {
-            isMarked = true;
-            if (btnLabel) btnLabel.textContent = 'PRESENT';
-            if (icon) icon.textContent = 'check_circle';
+        if (res.ok && data.success) {
+          isMarked = true;
+          if (btnLabel) btnLabel.textContent = 'PRESENT';
+          if (icon) icon.textContent = 'check_circle';
 
-            const checkinBadge = document.getElementById('student-checkin-badge');
-            const checkinIcon = document.getElementById('student-checkin-icon');
-            const checkinText = document.getElementById('student-checkin-text');
-            const tokenPill = document.getElementById('student-token-pill');
+          const checkinBadge = document.getElementById('student-checkin-badge');
+          const checkinIcon = document.getElementById('student-checkin-icon');
+          const checkinText = document.getElementById('student-checkin-text');
+          const tokenPill = document.getElementById('student-token-pill');
 
-            if (checkinBadge) checkinBadge.className = 'flex items-center gap-1.5 bg-secondary-container/20 px-2.5 py-0.5 rounded-full border border-secondary/40 text-secondary text-xs';
-            if (checkinIcon) checkinIcon.textContent = 'check_circle';
-            if (checkinText) checkinText.textContent = `Marked Present at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            if (tokenPill) tokenPill.textContent = `Token: #${currentSessionToken} Verified`;
+          if (checkinBadge) checkinBadge.className = 'flex items-center gap-1.5 bg-secondary-container/20 px-2.5 py-0.5 rounded-full border border-secondary/40 text-secondary text-xs';
+          if (checkinIcon) checkinIcon.textContent = 'check_circle';
+          if (checkinText) checkinText.textContent = `Marked Present at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+          if (tokenPill) tokenPill.textContent = `Token: #${currentSessionToken} Verified`;
 
-            // Confirmation Notification Popup
-            const notif = document.createElement('div');
-            notif.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-emerald-950/95 border-2 border-emerald-400 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-xl animate-bounce';
-            notif.innerHTML = `
-              <span class="material-symbols-outlined text-emerald-400 text-3xl">verified</span>
-              <div>
-                <p class="font-bold text-sm text-emerald-300">ATTENDANCE VERIFIED & RECORDED</p>
-                <p class="text-xs text-slate-300">USN: ${studentUsn} | ${studentName} | Token: #${currentSessionToken} OK</p>
-              </div>
-            `;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 6000);
+          showToast(`Attendance verified & recorded for ${studentName} (${studentUsn})!`, 'success', 'Verified Present');
 
-            // Re-fetch Roster & Stats
-            fetchStudentRoster();
-          } else if (data.proxy_rejected) {
-            if (btnLabel) btnLabel.textContent = 'PROXY REJECTED';
-            if (icon) icon.textContent = 'gpp_bad';
-            showToast(data.message || 'PROXY REJECTED: Hardware signature mismatch! Device locked.', 'error', 'Proxy Detected');
-          } else {
-            showToast(data.message || 'Attendance recording failed.', 'error', 'Attendance Failed');
-          }
-        } catch(err) {
-          showToast('Network connection error: ' + err.message, 'error', 'Connection Error');
+          // Re-fetch Roster & Stats
+          fetchStudentRoster();
+        } else if (data.proxy_rejected) {
+          if (btnLabel) btnLabel.textContent = 'PROXY REJECTED';
+          if (icon) icon.textContent = 'gpp_bad';
+          showToast(data.message || 'PROXY REJECTED: Hardware signature mismatch! Device locked.', 'error', 'Proxy Detected');
+        } else {
+          showToast(data.message || 'Attendance recording failed.', 'error', 'Attendance Failed');
         }
-      }, 1000);
+      } catch(err) {
+        showToast('Network connection error: ' + err.message, 'error', 'Connection Error');
+      }
     });
   }
 

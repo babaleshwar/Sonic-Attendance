@@ -126,6 +126,34 @@ def init_db():
     )
     """)
 
+    # Ensure baseline department catalog exists
+    cursor.execute("SELECT COUNT(*) as cnt FROM faculty")
+    if cursor.fetchone()["cnt"] == 0:
+        default_faculty = [
+            ("VSM-CSE-SK01", "Prof. S. K. Kulkarni", "9845123456", "Dept of Computer Science & Engineering", "Assistant Professor", "CS501 - Machine Learning", hash_password("facultyPass2026")),
+            ("VSM-CSE-RP02", "Prof. R. V. Patil", "9845123457", "Dept of Computer Science & Engineering", "Associate Professor", "CS502 - Computer Networks", hash_password("facultyPass2026")),
+            ("VSM-CSE-AJ03", "Prof. A. N. Joshi", "9845123458", "Dept of Computer Science & Engineering", "Assistant Professor", "CS503 - Database Management Systems", hash_password("facultyPass2026")),
+            ("VSM-CSE-MB04", "Prof. M. S. Biradar", "9845123459", "Dept of Computer Science & Engineering", "Assistant Professor", "CS505 - Cloud Computing Architecture", hash_password("facultyPass2026"))
+        ]
+        cursor.executemany("""
+        INSERT INTO faculty (faculty_id, name, mobile, department, designation, subject, password_hash)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, default_faculty)
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM courses")
+    if cursor.fetchone()["cnt"] == 0:
+        default_courses = [
+            ("CS501", "Machine Learning", "Prof. S. K. Kulkarni", "VSM-CSE-SK01", "Room 304", 4),
+            ("CS502", "Computer Networks", "Prof. R. V. Patil", "VSM-CSE-RP02", "Room 208", 4),
+            ("CS503", "Database Management Systems", "Prof. A. N. Joshi", "VSM-CSE-AJ03", "Room 304", 4),
+            ("CS504", "Full Stack Web Dev Lab", "Prof. S. K. Kulkarni", "VSM-CSE-SK01", "CSE Lab 03", 2),
+            ("CS505", "Cloud Computing Architecture", "Prof. M. S. Biradar", "VSM-CSE-MB04", "Room 208", 3)
+        ]
+        cursor.executemany("""
+        INSERT INTO courses (course_code, course_name, faculty_name, faculty_id, room_no, credits)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, default_courses)
+
     conn.commit()
     conn.close()
 
@@ -582,11 +610,12 @@ def session_start():
         if fac_row:
             faculty_id = fac_row["faculty_id"]
         else:
-            conn.close()
-            return jsonify({
-                "success": False,
-                "message": "Cannot start session: No faculty members registered in database yet. Please add faculty first."
-            }), 400
+            faculty_name = data.get("faculty_name", "Prof. S. K. Kulkarni")
+            cursor.execute("""
+            INSERT INTO faculty (faculty_id, name, mobile, department, designation, subject, password_hash)
+            VALUES (?, ?, '9845123456', 'Dept of Computer Science & Engineering', 'Assistant Professor', ?, ?)
+            """, (faculty_id, faculty_name, subject_name, hash_password("facultyPass2026")))
+            conn.commit()
 
     # Look up course details from courses table if exists
     cursor.execute("SELECT * FROM courses WHERE course_code = ?", (subject_code,))
