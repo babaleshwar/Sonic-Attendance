@@ -88,7 +88,7 @@
   <div class="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 max-w-full h-16 gap-3">
 
     <div class="flex items-center gap-3 shrink-0">
-      <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 group" title="Return to SonicAttend Home">
+      <a href="/" class="flex items-center gap-2.5 sm:gap-3 group" title="Return to SonicAttend Home">
         <img alt="SonicAttend Brand Logo" class="w-10 h-10 object-contain drop-shadow-[0_2px_10px_rgba(78,222,163,0.35)] flex-shrink-0 group-hover:scale-105 transition-transform" src="logo.png"/>
         <div class="flex flex-col min-w-0">
           <div class="flex items-center gap-1.5 sm:gap-2">
@@ -113,12 +113,12 @@
         <span class="text-[11px] font-mono text-secondary font-bold tracking-wider">19.25 kHz ACTIVE</span>
       </div>
 
-      <a href="index.html" title="SonicAttend Home Hub" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors">
+      <a href="/" title="SonicAttend Home Hub" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-medium transition-colors">
         <span class="material-symbols-outlined text-[16px]">home</span>
         <span class="hidden xl:inline">Home</span>
       </a>
 
-      <a href="student_attendance.html" title="Open Student Mobile View" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container/20 border border-secondary/30 text-secondary hover:text-white text-xs font-semibold transition-colors">
+      <a href="/attendance" title="Open Student Mobile View" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-secondary-container/20 border border-secondary/30 text-secondary hover:text-white text-xs font-semibold transition-colors">
         <span class="material-symbols-outlined text-[16px]">smartphone</span>
         <span class="hidden sm:inline">Student View</span>
       </a>
@@ -731,7 +731,7 @@
   // Faculty identity from localStorage or default
   const savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || 'null');
     if (!savedFaculty || !savedFaculty.faculty_id) {
-      window.location.href = 'lecturer_login.html';
+      window.location.href = "/faculty/login";
       return;
     }
   if (savedFaculty && savedFaculty.name) {
@@ -1309,7 +1309,7 @@
   function facultySignOut() {
     if (confirm('Sign out from Lecturer Command Console?')) {
       localStorage.removeItem('current_faculty');
-      window.location.href = 'lecturer_login.html';
+      window.location.href = "/faculty/login";
     }
   }
 

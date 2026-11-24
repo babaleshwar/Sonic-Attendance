@@ -530,7 +530,7 @@ function showToast(message, type = 'info', title = '') {
         </span>
       </div>
       
-      <button onclick="window.location.href='lecturer_login.html';"
+      <button onclick="window.location.href="/faculty/login";"
         class="mt-3 w-full py-3 px-4 rounded-xl bg-surface-container-high/60 hover:bg-surface-container-high border border-outline-variant/40 flex items-center justify-center gap-2.5 text-on-surface text-label-lg font-label-lg active:scale-98 transition-all shadow-sm"
         type="button">
         <span class="material-symbols-outlined text-[20px] text-tertiary">co_present</span>
@@ -547,7 +547,7 @@ function showToast(message, type = 'info', title = '') {
       <p class="text-[10px] text-on-surface-variant/50">
         VSM's S.R. Kittoor Institute of Technology, Nipani • Department of Computer Science & Engineering
       </p>
-      <p class="pt-2"><a href="index.html" class="text-xs text-primary underline">← Back to SonicAttend Home Hub</a></p>
+      <p class="pt-2"><a href="/" class="text-xs text-primary underline">← Back to SonicAttend Home Hub</a></p>
     </footer>
   </main>
   <script>
@@ -556,7 +556,7 @@ function showToast(message, type = 'info', title = '') {
 
     if (lecturerBtn) {
       lecturerBtn.addEventListener('click', () => {
-        window.location.href = 'lecturer_login.html';
+        window.location.href = "/faculty/login";
       });
     }
 
@@ -603,7 +603,7 @@ function showToast(message, type = 'info', title = '') {
           if (res.ok && data.success) {
             localStorage.setItem('current_student', JSON.stringify(data.student));
             localStorage.setItem('sonic_device_id', data.student.bound_device_id);
-            window.location.href = 'student_attendance.html';
+            window.location.href = "/attendance";
           } else {
             showToast(data.message || 'Invalid USN or password. Please verify your credentials.', 'error', 'Authentication Failed');
           }
@@ -612,7 +612,7 @@ function showToast(message, type = 'info', title = '') {
           localStorage.setItem('current_student', JSON.stringify({
             usn: usn, name: 'Pankaj M Babaleshwar', branch: 'Computer Science & Engineering', semester: '5th Sem', bound_device_id: currentDev
           }));
-          window.location.href = 'student_attendance.html';
+          window.location.href = "/attendance";
         }
       });
     }
@@ -645,7 +645,7 @@ function showToast(message, type = 'info', title = '') {
           if (res.ok && data.success) {
             localStorage.setItem('current_student', JSON.stringify(data.student));
             showToast(`Registration Successful! Account bound to ${name} (${usn}). Redirecting to attendance...`, 'success', 'VTU Portal');
-            setTimeout(() => { window.location.href = 'student_attendance.html'; }, 1000);
+            setTimeout(() => { window.location.href = "/attendance"; }, 1000);
           } else {
             showToast(data.message || 'Registration failed. Please check the entered details.', 'error', 'Registration Failed');
           }

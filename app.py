@@ -7,7 +7,7 @@ import io
 import csv
 import random
 from datetime import datetime
-from flask import Flask, request, jsonify, send_from_directory, Response
+from flask import Flask, request, jsonify, send_from_directory, Response, redirect
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "sonicattend.db")
@@ -198,11 +198,79 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET,PUT,POST,DELETE,OPTIONS"
     return response
 
-# static routes
+
+# Clean Web Navigation Routes
 
 @app.route("/")
 def serve_index():
     return send_from_directory(BASE_DIR, "index.html")
+
+@app.route("/login")
+def serve_login():
+    return send_from_directory(BASE_DIR, "login.html")
+
+@app.route("/register")
+def serve_register():
+    return send_from_directory(BASE_DIR, "student_register.html")
+
+@app.route("/attendance")
+def serve_attendance():
+    return send_from_directory(BASE_DIR, "student_attendance.html")
+
+@app.route("/faculty")
+@app.route("/faculty/login")
+@app.route("/lecturer/login")
+def serve_faculty_login():
+    return send_from_directory(BASE_DIR, "lecturer_login.html")
+
+@app.route("/faculty/console")
+@app.route("/lecturer/console")
+def serve_faculty_console():
+    return send_from_directory(BASE_DIR, "lecturer_console.html")
+
+# 301 Permanent Redirects for legacy .html URLs to clean URLs
+@app.route("/index.html")
+def redirect_index():
+    return redirect("/", code=301)
+
+@app.route("/login.html")
+def redirect_login():
+    return redirect("/login", code=301)
+
+@app.route("/student_register.html")
+def redirect_register():
+    return redirect("/register", code=301)
+
+@app.route("/student_attendance.html")
+def redirect_attendance():
+    return redirect("/attendance", code=301)
+
+@app.route("/lecturer_login.html")
+def redirect_faculty_login():
+    return redirect("/faculty/login", code=301)
+
+@app.route("/lecturer_console.html")
+def redirect_faculty_console():
+    return redirect("/faculty/console", code=301)
+
+@app.route("/api/db/summary", methods=["GET"])
+def db_summary():
+    conn = get_db()
+    cursor = conn.cursor()
+    tables = ["students", "faculty", "courses", "class_sessions", "attendance_records", "device_rebinding_tickets"]
+    counts = {t: cursor.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in tables}
+    cursor.execute("SELECT usn, name, branch, semester, mobile, bound_device_id, created_at FROM students ORDER BY created_at DESC")
+    students = [dict(r) for r in cursor.fetchall()]
+    cursor.execute("SELECT record_id, session_id, usn, student_name, subject_code, timestamp, status, device_id FROM attendance_records ORDER BY record_id DESC LIMIT 50")
+    attendance = [dict(r) for r in cursor.fetchall()]
+    conn.close()
+    return jsonify({
+        "status": "online",
+        "database_file": "sonicattend.db",
+        "counts": counts,
+        "students": students,
+        "recent_attendance": attendance
+    })
 
 @app.route("/<path:filename>")
 def serve_static(filename):

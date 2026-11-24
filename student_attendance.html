@@ -14,7 +14,7 @@
   function studentSignOut() {
     if (confirm('Sign out from SonicAttend? You will need to log in again.')) {
       localStorage.removeItem('current_student');
-      window.location.href = 'login.html';
+      window.location.href = "/login";
     }
   }
 
@@ -128,7 +128,7 @@
   function studentSignOut() {
     if (confirm('Sign out from SonicAttend? You will need to log in again.')) {
       localStorage.removeItem('current_student');
-      window.location.href = 'login.html';
+      window.location.href = "/login";
     }
   }
 
@@ -197,7 +197,7 @@
 </div>
 </div>
 <div class="flex items-center gap-2">
-  <a href="index.html" title="SonicAttend Home Hub" class="p-1.5 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors">
+  <a href="/" title="SonicAttend Home Hub" class="p-1.5 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors">
     <span class="material-symbols-outlined text-[18px]">home</span>
   </a>
 
@@ -600,12 +600,12 @@
   </section>
 
   <section class="space-y-2 pt-1">
-    <button onclick="window.location.href='lecturer_login.html';" class="w-full py-3 px-4 rounded-xl bg-surface-container/80 hover:bg-surface-container-high border border-purple-500/30 text-purple-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
+    <button onclick="window.location.href="/faculty/login";" class="w-full py-3 px-4 rounded-xl bg-surface-container/80 hover:bg-surface-container-high border border-purple-500/30 text-purple-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
       <span class="material-symbols-outlined text-[18px] text-purple-400">co_present</span>
       <span>Are you a Lecturer? Switch to Faculty Portal</span>
     </button>
     
-    <button onclick="window.location.href='login.html';" class="w-full py-3 px-4 rounded-xl bg-error-container/20 hover:bg-error-container/30 border border-error/40 text-error text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
+    <button onclick="window.location.href="/login";" class="w-full py-3 px-4 rounded-xl bg-error-container/20 hover:bg-error-container/30 border border-error/40 text-error text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
       <span class="material-symbols-outlined text-[18px]">logout</span>
       <span>Sign Out from Student Portal</span>
     </button>
@@ -642,7 +642,7 @@
 
   let savedStudent = JSON.parse(localStorage.getItem('current_student') || 'null');
   if (!savedStudent || !savedStudent.usn) {
-    window.location.href = 'student_register.html';
+    window.location.href = "/register";
     return;
   }
 
@@ -1168,7 +1168,7 @@
   function studentSignOut() {
     if (confirm('Sign out from SonicAttend? You will need to log in again.')) {
       localStorage.removeItem('current_student');
-      window.location.href = 'login.html';
+      window.location.href = "/login";
     }
   }
 

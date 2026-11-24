@@ -95,7 +95,7 @@
 
   <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 py-2.5 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
     <div class="flex items-center gap-3">
-      <a href="index.html" class="flex items-center gap-3 group">
+      <a href="/" class="flex items-center gap-3 group">
         <img src="logo.png" alt="SonicAttend Logo" class="w-11 h-11 sm:w-12 sm:h-12 object-contain drop-shadow-[0_2px_14px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform flex-shrink-0" />
         <div class="flex flex-col">
           <span class="text-base sm:text-lg font-bold text-on-surface tracking-tight leading-snug">SonicAttend</span>
@@ -104,7 +104,7 @@
       </a>
     </div>
     <div class="flex items-center gap-2">
-      <a href="index.html" title="Home Hub" class="p-1 px-2.5 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface text-xs flex items-center gap-1">
+      <a href="/" title="Home Hub" class="p-1 px-2.5 rounded-full bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface text-xs flex items-center gap-1">
         <span class="material-symbols-outlined text-[16px]">home</span>
         <span class="hidden sm:inline">Home</span>
       </a>
@@ -120,7 +120,7 @@
     <section class="mt-2 mb-4 w-full">
       <div class="grid grid-cols-2 p-1.5 rounded-full bg-surface-container-lowest/90 border border-outline-variant/30 backdrop-blur-lg shadow-inner">
         
-        <a href="login.html"
+        <a href="/login"
           class="flex items-center justify-center gap-2 py-2 px-3 rounded-full text-on-surface-variant hover:text-on-surface transition-colors active:scale-98">
           <span class="material-symbols-outlined text-[18px]">school</span>
           <span class="text-xs sm:text-sm font-medium">Student Portal</span>
@@ -392,7 +392,7 @@
       <p class="text-[10px] text-on-surface-variant/50">
         VSMSRKITE Nipani • Authorized Lecturer Terminal Only
       </p>
-      <p class="pt-2"><a href="index.html" class="text-xs text-purple-300 underline">← Back to SonicAttend Home Hub</a></p>
+      <p class="pt-2"><a href="/" class="text-xs text-purple-300 underline">← Back to SonicAttend Home Hub</a></p>
     </footer>
 
   </main>
@@ -439,7 +439,7 @@
           const data = await res.json();
           if (res.ok && data.success) {
             localStorage.setItem('current_faculty', JSON.stringify(data.faculty));
-            window.location.href = 'lecturer_console.html';
+            window.location.href = "/faculty/console";
           } else {
             showToast(data.message || 'Faculty login failed. Check ID/Mobile or Password.', 'error', 'Login Failed');
           }
@@ -451,7 +451,7 @@
             subject: 'CS501 - Machine Learning',
             department: 'Dept of CSE'
           }));
-          window.location.href = 'lecturer_console.html';
+          window.location.href = "/faculty/console";
         }
       });
     }
