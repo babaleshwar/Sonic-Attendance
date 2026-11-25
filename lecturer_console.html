@@ -728,12 +728,17 @@
   const FSK_FREQUENCIES = [18500, 18800, 19000, 19250, 19500, 19800];
   let currentFskIndex = 3; // 19250 Hz primary carrier
 
-  // Faculty identity from localStorage or default
-  const savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || 'null');
-    if (!savedFaculty || !savedFaculty.faculty_id) {
-      window.location.href = "/faculty/login";
-      return;
-    }
+  // Faculty identity from localStorage or default (DIRECT TESTING MODE ENABLED)
+  let savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || 'null');
+  if (!savedFaculty || !savedFaculty.faculty_id) {
+    savedFaculty = {
+      faculty_id: 'VSM-CSE-FAC01',
+      name: 'Faculty Instructor (Direct Testing Mode)',
+      department: 'Dept of Computer Science & Engineering',
+      subject: 'CS501 - Machine Learning',
+      room_no: 'Classroom 304'
+    };
+  }
   if (savedFaculty && savedFaculty.name) {
       const nameEl = document.getElementById('facultyNameDisplay');
       const idEl = document.getElementById('facultyIdDisplay');

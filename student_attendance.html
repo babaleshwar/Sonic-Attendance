@@ -638,12 +638,18 @@
 </nav>
 
 <script>
-    // student session
+    // student session (DIRECT FREQUENCY TESTING MODE ENABLED)
 
   let savedStudent = JSON.parse(localStorage.getItem('current_student') || 'null');
   if (!savedStudent || !savedStudent.usn) {
-    window.location.href = "/register";
-    return;
+    savedStudent = {
+      usn: '2VS24CS050',
+      name: 'Pankaj M B (Frequency Testing Mode)',
+      bound_device_id: 'DEV-TEST-PHONE',
+      semester: '5th Sem',
+      branch: 'Computer Science & Engineering',
+      mobile: '9845123456'
+    };
   }
 
   const studentUsn = (savedStudent.usn || "").toUpperCase();
