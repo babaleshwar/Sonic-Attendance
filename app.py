@@ -229,6 +229,17 @@ def redirect_faculty_console():
 def serve_database_viewer():
     return send_from_directory(BASE_DIR, "database.html")
 
+@app.route("/presentation")
+def serve_presentation():
+    return send_from_directory(BASE_DIR, "presentation.html")
+
+@app.route("/api/download/pptx")
+def download_pptx():
+    pptx_path = os.path.join(BASE_DIR, "SonicAttend_Mini_Project_Presentation.pptx")
+    if os.path.exists(pptx_path):
+        return send_file(pptx_path, as_attachment=True, download_name="SonicAttend_Mini_Project_Presentation.pptx")
+    return jsonify({"error": "Presentation file not found"}), 404
+
 @app.route("/api/db/download")
 def download_db():
     if os.path.exists(DB_PATH):
