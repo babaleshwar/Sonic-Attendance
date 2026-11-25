@@ -49,7 +49,7 @@ def init_db():
         mobile TEXT NOT NULL,
         department TEXT DEFAULT 'Dept of Computer Science & Engineering',
         designation TEXT DEFAULT 'Assistant Professor',
-        subject TEXT DEFAULT 'CS501 - Machine Learning',
+        subject TEXT DEFAULT 'Computer Science',
         password_hash TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -125,70 +125,6 @@ def init_db():
         FOREIGN KEY (usn) REFERENCES students(usn)
     )
     """)
-
-    # Seed official curriculum and faculty if courses table is empty
-    cursor.execute("SELECT COUNT(*) FROM courses")
-    if cursor.fetchone()[0] == 0:
-        default_pw = hash_password("facultyPass2026")
-        official_faculty = [
-            ("VSM-CSE-PM01", "Prof. Pratibha Madhale", "9845110001", "Dept of Computer Science & Engineering", "Assistant Professor", "BCS501 - Software Engineering & Project Management", default_pw),
-            ("VSM-CSE-KB02", "Prof. Keerti B", "9845110002", "Dept of Computer Science & Engineering", "Assistant Professor", "BCS502 - Computer Networks", default_pw),
-            ("VSM-CSE-PP03", "Prof. Prasanna Patil", "9845110003", "Dept of Computer Science & Engineering", "Assistant Professor", "BCS503 - Theory of Computation", default_pw),
-            ("VSM-CSE-AG04", "Ms. Amruta G", "9845110004", "Dept of Computer Science & Engineering", "Assistant Professor", "BCSL504 - Web Technology Lab", default_pw),
-            ("VSM-CSE-NS05", "Prof. Neelamma Shinannavar", "9845110005", "Dept of Computer Science & Engineering", "Assistant Professor", "BCS515C - Unix System Programming", default_pw),
-            ("VSM-CSE-AT06", "Prof. Amruta Talawar", "9742170713", "Dept of Computer Science & Engineering", "Assistant Professor & Class Coordinator", "BCS586 - Mini Project", default_pw),
-            ("VSM-CSE-SS07", "Dr. Shilpa S", "9845110007", "Dept of Computer Science & Engineering", "Associate Professor", "BRMK557 - Research Methodology and IPR", default_pw),
-            ("VSM-CSE-VP08", "Prof. Varsha Patil", "9845110008", "Dept of Computer Science & Engineering", "Assistant Professor", "BCS508 - Environmental Studies and E-waste Management", default_pw),
-            ("VSM-CSE-SY09", "Prof. Suhas Yadav", "9845110009", "Dept of Computer Science & Engineering", "Assistant Professor", "BNSK559 - National Service Scheme", default_pw),
-            ("VSM-CSE-RP10", "Prof. Rahul Palakar", "9845110010", "Dept of Computer Science & Engineering", "Professor & Head of Department (HOD)", "Department Administration", default_pw),
-        ]
-        cursor.executemany("INSERT OR IGNORE INTO faculty (faculty_id, name, mobile, department, designation, subject, password_hash) VALUES (?, ?, ?, ?, ?, ?, ?)", official_faculty)
-
-        official_courses = [
-            ("BCS501", "Software Engineering & Project Management", "Prof. Pratibha Madhale", "VSM-CSE-PM01", "Room 304", 3),
-            ("BCS502", "Computer Networks", "Prof. Keerti B", "VSM-CSE-KB02", "Room 304", 4),
-            ("BCS503", "Theory of Computation", "Prof. Prasanna Patil", "VSM-CSE-PP03", "Room 304", 4),
-            ("BCSL504", "Web Technology Lab", "Ms. Amruta G", "VSM-CSE-AG04", "Computing Lab 02", 2),
-            ("BCS515C", "Unix System Programming", "Prof. Neelamma Shinannavar", "VSM-CSE-NS05", "Room 304", 3),
-            ("BCS586", "Mini Project", "Prof. Amruta Talawar", "VSM-CSE-AT06", "Project Lab", 2),
-            ("BRMK557", "Research Methodology and IPR", "Dr. Shilpa S", "VSM-CSE-SS07", "Room 304", 3),
-            ("BCS508", "Environmental Studies & E-waste", "Prof. Varsha Patil", "VSM-CSE-VP08", "Room 304", 2),
-            ("BNSK559", "National Service Scheme (NSS)", "Prof. Suhas Yadav", "VSM-CSE-SY09", "Seminar Hall", 1),
-        ]
-        cursor.executemany("INSERT OR IGNORE INTO courses (course_code, course_name, faculty_name, faculty_id, room_no, credits) VALUES (?, ?, ?, ?, ?, ?)", official_courses)
-
-        official_tt = [
-            ("Mon", 1, "BCS502", "Computer Networks", "Prof. Keerti B", "Room 304", "09:30 AM", "10:25 AM", 0),
-            ("Mon", 2, "BCS501", "Software Engineering & PM", "Prof. Pratibha Madhale", "Room 304", "10:25 AM", "11:20 AM", 0),
-            ("Mon", 3, "BCS503", "Theory of Computation", "Prof. Prasanna Patil", "Room 304", "11:35 AM", "12:30 PM", 0),
-            ("Mon", 4, "BCS503", "Theory of Computation (Tutorial)", "Prof. Prasanna Patil", "Room 304", "12:30 PM", "01:25 PM", 0),
-            ("Mon", 5, "AICTE", "AICTE Activity Program", "Faculty In-charge", "Campus Grounds", "01:00 PM", "03:00 PM", 0),
-            ("Mon", 6, "AICTE", "AICTE Activity Program", "Faculty In-charge", "Campus Grounds", "03:00 PM", "05:00 PM", 0),
-            ("Tue", 1, "BCS502", "Computer Networks", "Prof. Keerti B", "Room 304", "09:30 AM", "10:25 AM", 0),
-            ("Tue", 2, "BCS503", "Theory of Computation", "Prof. Prasanna Patil", "Room 304", "10:25 AM", "11:20 AM", 0),
-            ("Tue", 3, "BCS501", "Software Engineering & PM", "Prof. Pratibha Madhale", "Room 304", "11:35 AM", "12:30 PM", 0),
-            ("Tue", 4, "BCS508", "Environmental Studies & E-waste", "Prof. Varsha Patil", "Room 304", "12:30 PM", "01:25 PM", 0),
-            ("Tue", 5, "BNSK559", "NSS Activity", "Prof. Suhas Yadav", "Campus Grounds", "01:00 PM", "03:00 PM", 0),
-            ("Tue", 6, "BNSK559", "NSS Activity", "Prof. Suhas Yadav", "Campus Grounds", "03:00 PM", "05:00 PM", 0),
-            ("Wed", 1, "BCS503", "Theory of Computation", "Prof. Prasanna Patil", "Room 304", "09:30 AM", "10:25 AM", 0),
-            ("Wed", 2, "BCS501", "Software Engineering & PM", "Prof. Pratibha Madhale", "Room 304", "10:25 AM", "11:20 AM", 0),
-            ("Wed", 3, "BCS515C", "Unix System Programming", "Prof. Neelamma S", "Room 304", "11:35 AM", "12:30 PM", 0),
-            ("Wed", 4, "BRMK557", "Research Methodology & IPR", "Dr. Shilpa S", "Room 304", "12:30 PM", "01:25 PM", 0),
-            ("Wed", 5, "BCS586", "Mini Project (Batch B1 & B2)", "Prof. Amruta Talawar", "Project Lab", "01:00 PM", "03:00 PM", 1),
-            ("Wed", 6, "BRMK557", "Research Methodology (Tutorial)", "Dr. Shilpa S", "Room 304", "03:00 PM", "05:00 PM", 0),
-            ("Thu", 1, "BCS515C", "Unix System Programming", "Prof. Neelamma S", "Room 304", "09:30 AM", "10:25 AM", 0),
-            ("Thu", 2, "BCS502", "Computer Networks", "Prof. Keerti B", "Room 304", "10:25 AM", "11:20 AM", 0),
-            ("Thu", 3, "BCS503", "Theory of Computation (Tutorial)", "Prof. Prasanna Patil", "Room 304", "11:35 AM", "12:30 PM", 0),
-            ("Thu", 4, "BCSL504", "Web Technology Lab (B1) / CN Lab (B2)", "Ms. Amruta G / Prof. Keerti B", "Computing Lab 02", "01:00 PM", "03:00 PM", 1),
-            ("Thu", 5, "BCSL504", "Web Technology Lab (B2) / CN Lab (B1)", "Ms. Amruta G / Prof. Keerti B", "Computing Lab 02", "03:00 PM", "05:00 PM", 1),
-            ("Fri", 1, "BRMK557", "Research Methodology & IPR", "Dr. Shilpa S", "Room 304", "09:30 AM", "10:25 AM", 0),
-            ("Fri", 2, "BCS508", "Environmental Studies & E-waste", "Prof. Varsha Patil", "Room 304", "10:25 AM", "11:20 AM", 0),
-            ("Fri", 3, "BCS515C", "Unix System Programming", "Prof. Neelamma S", "Room 304", "11:35 AM", "12:30 PM", 0),
-            ("Fri", 4, "T&P", "Training & Placement Cell", "Training Coordinator", "Seminar Hall", "01:00 PM", "05:00 PM", 0),
-            ("Sat", 1, "AICTE", "AICTE Activity Program", "Faculty In-charge", "Campus Grounds", "09:30 AM", "10:25 AM", 0),
-            ("Sat", 2, "AICTE", "AICTE Activity Program", "Faculty In-charge", "Campus Grounds", "10:25 AM", "11:20 AM", 0),
-        ]
-        cursor.executemany("INSERT OR IGNORE INTO timetable (day_of_week, period_no, course_code, course_name, faculty_name, room_no, start_time, end_time, is_lab) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", official_tt)
 
     conn.commit()
     conn.close()
@@ -298,6 +234,32 @@ def download_db():
     if os.path.exists(DB_PATH):
         return send_file(DB_PATH, as_attachment=True, download_name="sonicattend.db")
     return jsonify({"error": "Database file not found"}), 404
+
+@app.route("/api/db/reset", methods=["POST"])
+def reset_db_endpoint():
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        tables = [
+            'faculty',
+            'courses',
+            'students',
+            'class_sessions',
+            'attendance_records',
+            'device_rebinding_tickets',
+            'timetable'
+        ]
+        for t in tables:
+            cursor.execute(f"DELETE FROM {t};")
+        conn.commit()
+        cursor.execute("VACUUM;")
+        conn.close()
+        return jsonify({
+            "success": True,
+            "message": "Database completely refreshed and cleared successfully. Ready for fresh testing."
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/api/db/summary", methods=["GET"])
 def db_summary():
@@ -1199,15 +1161,11 @@ def export_vtu_sheet():
     </div>
     <div>
       <div class="sig-line">Signature of Class Coordinator</div>
-      <div>Prof. Amruta Talawar</div>
+      <div>Dept of CSE</div>
     </div>
     <div>
       <div class="sig-line">Signature of Head of Department</div>
-      <div>Prof. Rahul Palakar (HOD, CSE)</div>
-    </div>
-    <div>
-      <div class="sig-line">Signature of Principal & Director</div>
-      <div>Dr. Umesh Patil</div>
+      <div>HOD, Computer Science & Engg</div>
     </div>
   </div>
 

@@ -25,6 +25,10 @@
         <a href="/" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition-colors">
           Home
         </a>
+        <button onclick="confirmResetDb()" class="px-3 py-1.5 rounded-lg border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 text-xs font-bold text-red-300 flex items-center gap-1.5 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+          Refresh Database
+        </button>
         <a href="/api/db/download" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white flex items-center gap-1.5 transition-colors shadow-sm">
           <span class="material-symbols-outlined text-[16px]">download</span>
           Download .db File
@@ -172,6 +176,24 @@
         }
       } catch (err) {
         console.error('Failed to load db summary:', err);
+      }
+    }
+
+    async function confirmResetDb() {
+      if (!confirm("⚠️ Pura database refresh karna chahte hain? Saare test records (students, faculty, attendance) wipe ho jayenge aur ekdum fresh start hoga.")) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/db/reset', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ Database successfully refreshed! Sabhi tables 0 rows par reset ho gaye.");
+          loadData();
+        } else {
+          alert("❌ Error: " + (data.error || "Reset failed"));
+        }
+      } catch (e) {
+        alert("Network error while resetting database.");
       }
     }
 
