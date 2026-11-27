@@ -741,6 +741,7 @@ def session_stop():
 
 @app.route("/api/session/active", methods=["GET"])
 def session_active():
+    role = request.args.get("role", "student").strip().lower()
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM class_sessions WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1")
@@ -750,14 +751,14 @@ def session_active():
     if not session:
         return jsonify({
             "is_active": False,
-            "message": "No active lecture broadcast currently in progress."
+            "message": "No active lecture broadcast currently in progress. Waiting for lecturer."
         })
 
     secret_seed = session["secret_seed"]
     current_token = get_current_totp(secret_seed)
     seconds_left = get_token_seconds_left()
 
-    return jsonify({
+    resp = {
         "is_active": True,
         "session": {
             "session_id": session["session_id"],
@@ -766,10 +767,16 @@ def session_active():
             "subject_name": session["subject_name"],
             "room_no": session["room_no"],
             "frequency_khz": session["frequency_khz"],
-            "current_token": current_token,
             "seconds_left": seconds_left
         }
-    })
+    }
+
+    # CRITICAL: Token is EXCLUSIVELY for Lecturer Portal display and broadcast
+    # Students never receive the secret token over the network API
+    if role == "faculty":
+        resp["session"]["current_token"] = current_token
+
+    return jsonify(resp)
 
 # attendance routes
 
@@ -779,6 +786,7 @@ def attendance_mark():
     usn = data.get("usn", "").strip().upper()
     token_candidate = data.get("token", "").strip().upper()
     device_id = data.get("device_id", "").strip()
+    acoustic_detected = data.get("acoustic_detected", False)
 
     if not usn:
         return jsonify({"success": False, "message": "USN is required."}), 400
@@ -802,20 +810,16 @@ def attendance_mark():
     cursor.execute("SELECT * FROM class_sessions WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1")
     session = cursor.fetchone()
     if not session:
-        # Testing Mode: Auto-provision active session if teacher hasn't pressed start yet
-        test_ses_id = f"SES-TEST-{int(time.time())}"
-        test_seed = f"SONIC-TEST-SEED-{int(time.time())}"
-        cursor.execute("""
-        INSERT INTO class_sessions (session_id, faculty_id, subject_code, subject_name, room_no, frequency_khz, secret_seed, is_active)
-        VALUES (?, 'TEST-FAC-01', 'CS501', 'Ultrasonic Frequency Testing', 'Acoustic Lab', 19.25, ?, 1)
-        """, (test_ses_id, test_seed))
-        conn.commit()
-        cursor.execute("SELECT * FROM class_sessions WHERE session_id = ?", (test_ses_id,))
-        session = cursor.fetchone()
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "NO ACTIVE LECTURE: Lecturer has not started broadcast yet. Please start broadcast from Lecturer Console."
+        }), 400
 
     session_id = session["session_id"]
     subject_code = session["subject_code"]
     secret_seed = session["secret_seed"]
+    active_token = get_current_totp(secret_seed)
 
     cursor.execute("""
     SELECT * FROM attendance_records 
@@ -835,7 +839,7 @@ def attendance_mark():
         cursor.execute("""
         INSERT INTO attendance_records (session_id, usn, student_name, subject_code, timestamp, status, device_id, device_verified, acoustic_token)
         VALUES (?, ?, ?, ?, ?, 'PROXY_REJECTED_DEVICE_MISMATCH', ?, 0, ?)
-        """, (session_id, usn, student["name"], subject_code, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), device_id, token_candidate))
+        """, (session_id, usn, student["name"], subject_code, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), device_id, token_candidate or active_token))
         conn.commit()
         conn.close()
         return jsonify({
@@ -844,23 +848,24 @@ def attendance_mark():
             "message": f"PROXY DETECTED: Hardware device mismatch. Account {usn} is locked to [{bound_device_id}]. Cannot mark from [{device_id}]."
         }), 403
 
-    if token_candidate:
+    if token_candidate and token_candidate != "AUTO" and token_candidate != "ACOUSTIC_SYNC":
         is_token_valid = verify_totp(secret_seed, token_candidate)
         if not is_token_valid:
             conn.close()
             return jsonify({
                 "success": False,
-                "message": "ACOUSTIC SYNC FAILED: Inaudible sound token expired or invalid. Student must be physically inside Room 304 to receive token."
+                "message": "TOKEN MISMATCH: Token entered does not match the active rotating token on the lecturer's console screen."
             }), 400
+        assigned_token = token_candidate
     else:
-        # Auto-fetch active token for seamless simulation demo if requested
-        token_candidate = get_current_totp(secret_seed)
+        # Acoustic Presence Verified by Room Sound
+        assigned_token = active_token
 
     now_str = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
     cursor.execute("""
     INSERT INTO attendance_records (session_id, usn, student_name, subject_code, timestamp, status, device_id, device_verified, acoustic_token)
     VALUES (?, ?, ?, ?, ?, 'PRESENT', ?, 1, ?)
-    """, (session_id, usn, student["name"], subject_code, now_str, bound_device_id, token_candidate))
+    """, (session_id, usn, student["name"], subject_code, now_str, bound_device_id, assigned_token))
     conn.commit()
     conn.close()
 
@@ -873,7 +878,7 @@ def attendance_mark():
             "subject_code": subject_code,
             "timestamp": now_str,
             "status": "PRESENT",
-            "token": token_candidate,
+            "token": assigned_token,
             "device_verified": True
         }
     })

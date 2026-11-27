@@ -147,8 +147,11 @@
       </div>
 
       <div class="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs font-mono">
-        <span class="text-on-surface-variant">Acoustic Token:</span>
-        <span id="session-token-display" class="text-tertiary font-bold px-2 py-0.5 rounded bg-surface-container-high border border-outline-variant/30">#SYNC-ACTIVE</span>
+        <span class="text-on-surface-variant">Classroom Beacon:</span>
+        <span id="acoustic-beacon-status" class="text-secondary font-bold px-2.5 py-0.5 rounded-full bg-surface-container-high border border-secondary/30 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+          <span>Acoustic Carrier Live</span>
+        </span>
       </div>
     </section>
 
@@ -219,6 +222,20 @@
           <span class="material-symbols-outlined text-[18px]">bolt</span>
           <span>⚡ Instant Check-in (1-Click Database Save)</span>
         </button>
+
+        <!-- MANUAL TOKEN ENTRY FALLBACK -->
+        <div class="mt-2.5 pt-2 border-t border-outline-variant/20 text-left">
+          <details class="group">
+            <summary class="text-[11px] text-outline hover:text-tertiary cursor-pointer font-mono flex items-center justify-between">
+              <span>Can't use microphone? Enter token from Lecturer Screen</span>
+              <span class="material-symbols-outlined text-[14px] group-open:rotate-180 transition-transform">expand_more</span>
+            </summary>
+            <div class="mt-2 flex gap-2">
+              <input id="manual-token-input" type="text" maxlength="6" placeholder="Enter token from lecturer screen" class="flex-1 px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-on-surface text-xs font-mono uppercase tracking-wider focus:border-tertiary focus:outline-none" />
+              <button type="button" onclick="submitManualToken()" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-tertiary/40 text-tertiary text-xs font-bold transition-all cursor-pointer">Submit</button>
+            </div>
+          </details>
+        </div>
       </div>
     </section>
 
@@ -288,7 +305,7 @@
     let isListening = false;
     let animFrameId = null;
     let isMarked = false;
-    let currentSessionToken = 'AUTO';
+    let isClassActive = false;
 
     function getSavedStudent() {
       let saved = JSON.parse(localStorage.getItem('current_student') || 'null');
@@ -346,29 +363,30 @@
         const badge = document.getElementById('session-beacon-badge');
         const title = document.getElementById('session-title');
         const subtitle = document.getElementById('session-subtitle');
-        const tokenDisplay = document.getElementById('session-token-display');
+        const beaconStatus = document.getElementById('acoustic-beacon-status');
 
         if (data.is_active && data.session) {
-          currentSessionToken = data.session.current_token;
+          isClassActive = true;
           if (dot) dot.innerHTML = '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>';
           if (statusText) {
-            statusText.textContent = 'Acoustic Session Active';
+            statusText.textContent = 'Classroom Broadcast Active';
             statusText.className = 'text-xs uppercase font-bold tracking-wider text-emerald-400';
           }
           if (badge) badge.textContent = `Carrier: ${(data.session.frequency_khz || 2.5)} kHz`;
           if (title) title.textContent = `${data.session.subject_code}: ${data.session.subject_name}`;
-          if (subtitle) subtitle.innerHTML = `<span class="material-symbols-outlined text-[15px] text-primary">meeting_room</span><span>${data.session.room_no} • Transmitter Active</span>`;
-          if (tokenDisplay) tokenDisplay.textContent = `#${data.session.current_token} (${data.session.seconds_left}s)`;
+          if (subtitle) subtitle.innerHTML = `<span class="material-symbols-outlined text-[15px] text-primary">meeting_room</span><span>${data.session.room_no} • Lecturer Transmitting Sound</span>`;
+          if (beaconStatus) beaconStatus.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span><span>Acoustic Carrier Live</span>';
         } else {
+          isClassActive = false;
           if (dot) dot.innerHTML = '<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500"></span>';
           if (statusText) {
-            statusText.textContent = 'Standby (Auto-provision on sync)';
+            statusText.textContent = 'Standby: Waiting for Lecturer';
             statusText.className = 'text-xs uppercase font-bold tracking-wider text-slate-400';
           }
-          if (badge) badge.textContent = 'Beacon: Standby';
-          if (title) title.textContent = 'CS501: Acoustic Attendance';
-          if (subtitle) subtitle.innerHTML = `<span class="material-symbols-outlined text-[15px] text-primary">sensors</span><span>Laptop ready to transmit sound</span>`;
-          if (tokenDisplay) tokenDisplay.textContent = '#READY';
+          if (badge) badge.textContent = 'Carrier: Inactive';
+          if (title) title.textContent = 'Classroom Session Standby';
+          if (subtitle) subtitle.innerHTML = `<span class="material-symbols-outlined text-[15px] text-slate-400">hourglass_empty</span><span>Lecturer has not started broadcast yet</span>`;
+          if (beaconStatus) beaconStatus.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span><span>Waiting for Lecturer Broadcast</span>';
         }
       } catch(e) {
         console.warn('Session sync warning:', e);
@@ -558,8 +576,24 @@
       await performCheckinBackend('Direct 1-Click Test');
     }
 
+    // Manual screen token submission (if mic disabled)
+    async function submitManualToken() {
+      const input = document.getElementById('manual-token-input');
+      const val = input ? input.value.trim().toUpperCase() : '';
+      if (!val) {
+        showToast('Please enter the token displayed on the lecturer console screen.', 'error', 'Token Required');
+        return;
+      }
+      const msgBox = document.getElementById('detection-msg-box');
+      if (msgBox) {
+        msgBox.className = 'p-3 rounded-lg bg-cyan-950/80 border border-cyan-400/50 text-xs font-mono text-center text-cyan-200';
+        msgBox.innerHTML = `🔑 Verifying Token <strong>#${val}</strong> with active lecturer session...`;
+      }
+      await performCheckinBackend('Manual Lecturer Token', val);
+    }
+
     // Core Backend Check-in
-    async function performCheckinBackend(sourceDesc) {
+    async function performCheckinBackend(sourceDesc, manualToken = null) {
       const syncBtn = document.getElementById('attendanceBtn');
       const btnLabel = document.getElementById('btn-sync-label');
       const btnIcon = document.getElementById('btn-sync-icon');
@@ -570,17 +604,20 @@
 
       try {
         const student = getSavedStudent();
-        const token = currentSessionToken || 'AUTO';
+        const payload = {
+          usn: student.usn,
+          device_id: student.bound_device_id || 'DEV-TEST-PHONE',
+          student_name: student.name,
+          acoustic_detected: true
+        };
+        if (manualToken) {
+          payload.token = manualToken;
+        }
 
         const res = await fetch('/api/attendance/mark', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            usn: student.usn,
-            token: token,
-            device_id: student.bound_device_id || 'DEV-TEST-PHONE',
-            student_name: student.name
-          })
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();

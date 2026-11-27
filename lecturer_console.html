@@ -1028,7 +1028,7 @@
 
   async function refreshEmergencyQR() {
     try {
-      const res = await fetch('/api/session/active');
+      const res = await fetch('/api/session/active?role=faculty');
       const data = await res.json();
       if (data.is_active && data.session) {
         updateQRModalPayload(data.session);
@@ -1202,7 +1202,7 @@
     // backend sync
     async function syncSession() {
     try {
-      const res = await fetch('/api/session/active');
+      const res = await fetch('/api/session/active?role=faculty');
       const data = await res.json();
       if (data.is_active && data.session) {
         const tokenDisplay = document.getElementById('lec-token-display');
