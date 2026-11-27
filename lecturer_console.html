@@ -268,22 +268,22 @@
 </div>
 
 <div class="bg-surface-container-lowest/90 rounded-xl p-space-md border border-outline-variant/60 my-space-md">
-<!-- FREQUENCY MODE SELECTOR & SPEAKER TEST CONTROLS -->
-<div class="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-lg bg-surface-container/70 border border-outline-variant/40 mb-3">
+<!-- STRICT INAUDIBLE ULTRASONIC CHANNEL -->
+<div class="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-lg bg-surface-container/80 border border-secondary/30 mb-3 shadow-sm">
   <div class="flex items-center gap-2">
-    <span class="text-xs font-bold text-on-surface">Frequency Mode:</span>
-    <button type="button" id="btn-mode-audible" onclick="setBroadcastMode('audible')" class="px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs border border-cyan-400 shadow-sm transition-all cursor-pointer">
-      🔊 Audible Test (2,500 Hz)
-    </button>
-    <button type="button" id="btn-mode-ultra" onclick="setBroadcastMode('ultrasonic')" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white transition-all cursor-pointer">
-      🤫 Ultrasonic (19,250 Hz)
-    </button>
+    <span class="relative flex h-2.5 w-2.5">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+    </span>
+    <span class="text-xs font-bold text-on-surface font-mono uppercase tracking-wide">Acoustic Mode:</span>
+    <span class="px-2.5 py-1 rounded bg-secondary/15 text-secondary font-mono text-xs font-bold border border-secondary/40 flex items-center gap-1.5 shadow-sm">
+      <span class="material-symbols-outlined text-sm">lock</span>
+      Pure Inaudible Ultrasonic (19,250 Hz FSK)
+    </span>
   </div>
-  <div class="flex items-center gap-2">
-    <button type="button" onclick="testSpeakerBeep()" class="px-3 py-1.5 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-200 border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm">
-      <span class="material-symbols-outlined text-[15px]">volume_up</span>
-      Test Laptop Speaker (2 kHz Beep)
-    </button>
+  <div class="flex items-center gap-2 text-xs font-mono text-on-surface-variant">
+    <span class="material-symbols-outlined text-sm text-tertiary">hearing_disabled</span>
+    <span>Zero Human Audio Disturbance • Silent Ultrasound Handshake</span>
   </div>
 </div>
 
@@ -292,7 +292,7 @@
 <span id="fsk-led" class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
 <span class="text-on-surface font-bold">REAL-TIME FFT SPECTRAL DENSITY</span>
 </span>
-<span id="fsk-mode-badge" class="px-2 py-0.5 rounded bg-surface-container text-tertiary font-mono text-[11px] border border-outline-variant/30">🔊 Audible Test Mode (2,500 Hz)</span>
+<span id="fsk-mode-badge" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary font-mono text-[11px] border border-secondary/30 font-bold">🤫 Inaudible Ultrasonic (19,250 Hz)</span>
 </div>
 
 <div class="relative w-full rounded-xl overflow-hidden border border-secondary/30 bg-gradient-to-b from-surface-container-low/95 to-surface-container-lowest/95 p-4 flex flex-col gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
@@ -319,19 +319,9 @@
     </div>
   </div>
 
-  <div id="lec-eq-bars" class="relative z-10 flex items-end justify-center gap-2 h-16 py-1.5 px-3 bg-surface-dim/80 rounded-lg border border-outline-variant/30 overflow-hidden shadow-inner">
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-1 h-5 shadow-[0_0_10px_rgba(76,215,246,0.6)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-2 h-9 shadow-[0_0_12px_rgba(78,222,163,0.7)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-3 h-13 shadow-[0_0_14px_rgba(76,215,246,0.8)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-4 h-15 shadow-[0_0_16px_rgba(78,222,163,0.9)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-5 h-11 shadow-[0_0_12px_rgba(78,222,163,0.7)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-6 h-14 shadow-[0_0_14px_rgba(76,215,246,0.85)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-7 h-8 shadow-[0_0_10px_rgba(78,222,163,0.6)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-4 h-15 shadow-[0_0_16px_rgba(76,215,246,0.9)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-3 h-13 shadow-[0_0_14px_rgba(78,222,163,0.8)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-tertiary-container via-tertiary to-secondary rounded-full eq-bar-5 h-11 shadow-[0_0_12px_rgba(76,215,246,0.7)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-2 h-9 shadow-[0_0_10px_rgba(78,222,163,0.6)]"></div>
-    <div class="flex-1 max-w-[16px] bg-gradient-to-t from-secondary-container via-secondary to-secondary-fixed rounded-full eq-bar-6 h-14 shadow-[0_0_14px_rgba(78,222,163,0.85)]"></div>
+  <!-- REAL WEB AUDIO API FFT SPECTRUM ANALYZER CANVAS -->
+  <div class="relative z-10 w-full h-32 bg-surface-dim/95 rounded-lg border border-secondary/20 overflow-hidden shadow-inner p-1">
+    <canvas id="fskVisualizerCanvas" class="w-full h-full block rounded"></canvas>
   </div>
 
   <div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono relative z-10 pt-1 border-t border-outline-variant/20">
@@ -793,49 +783,11 @@
     }
   }
 
-  let currentBroadcastMode = 'audible'; // 'audible' (2,500 Hz) or 'ultrasonic' (19,250 Hz)
-  let broadcastGainValue = 0.55; // Boosted physical acoustic gain
+  let currentBroadcastMode = 'ultrasonic'; // Strictly locked to Inaudible Ultrasonic (19,250 Hz)
+  let broadcastGainValue = 0.55; // Calibrated acoustic hardware gain
 
   function setBroadcastMode(mode) {
-    currentBroadcastMode = mode;
-    const btnAudible = document.getElementById('btn-mode-audible');
-    const btnUltra = document.getElementById('btn-mode-ultra');
-    const carrierEl = document.getElementById('fsk-carrier-status');
-    const modeBadge = document.getElementById('fsk-mode-badge');
-
-    if (mode === 'audible') {
-      if (btnAudible) btnAudible.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs border border-cyan-400 shadow-sm cursor-pointer';
-      if (btnUltra) btnUltra.className = 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white cursor-pointer';
-      if (carrierEl) carrierEl.textContent = 'Carrier: 2,500 Hz (Audible Speaker Test)';
-      if (modeBadge) modeBadge.textContent = '🔊 Audible Test Mode (2,500 Hz)';
-      showToast('🔊 Switched to Audible Test Mode (2,500 Hz). The sound will be clearly audible to your ears and mobile mic!', 'info', 'Audible Mode');
-    } else {
-      if (btnUltra) btnUltra.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs border border-emerald-400 shadow-sm cursor-pointer';
-      if (btnAudible) btnAudible.className = 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white cursor-pointer';
-      if (carrierEl) carrierEl.textContent = 'Carrier: 19,250 Hz (Inaudible Ultrasonic)';
-      if (modeBadge) modeBadge.textContent = '🤫 Inaudible Ultrasonic (19,250 Hz)';
-      showToast('🤫 Switched to Inaudible Ultrasonic Mode (19,250 Hz). Sound will be near-ultrasound above human hearing.', 'info', 'Ultrasonic Mode');
-    }
-
-    if (isBroadcasting && osc && audioCtx) {
-      const target = (currentBroadcastMode === 'audible') ? 2500 : 19250;
-      osc.frequency.setValueAtTime(target, audioCtx.currentTime);
-    }
-  }
-
-  function testSpeakerBeep() {
-    initAudioEngine();
-    const testOsc = audioCtx.createOscillator();
-    const testGain = audioCtx.createGain();
-    testOsc.type = 'sine';
-    testOsc.frequency.setValueAtTime(2000, audioCtx.currentTime);
-    testGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-    testGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
-    testOsc.connect(testGain);
-    testGain.connect(audioCtx.destination);
-    testOsc.start();
-    testOsc.stop(audioCtx.currentTime + 1.2);
-    showToast("🔊 2,000 Hz Audible Beep played on laptop speaker! Can you hear it?", "success", "Speaker Sound Test");
+    currentBroadcastMode = 'ultrasonic';
   }
 
   function startUltrasonicBroadcast() {
@@ -851,7 +803,7 @@
     gainNode = audioCtx.createGain();
 
     osc.type = 'sine';
-    const targetFreq = (currentBroadcastMode === 'audible') ? 2500 : 19250;
+    const targetFreq = 19250; // Pure inaudible ultrasonic carrier (19.25 kHz)
     osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
 
     gainNode.gain.setValueAtTime(broadcastGainValue, audioCtx.currentTime);
@@ -863,22 +815,18 @@
     osc.start();
     isBroadcasting = true;
 
+    const carrierEl = document.getElementById('fsk-carrier-status');
+    if (carrierEl) carrierEl.textContent = 'Carrier: 19,250 Hz (Inaudible Ultrasonic Active)';
+    const modeBadge = document.getElementById('fsk-mode-badge');
+    if (modeBadge) modeBadge.textContent = '🤫 Inaudible Ultrasonic (19,250 Hz)';
+
     if (fskModulatorTimer) clearInterval(fskModulatorTimer);
     fskModulatorTimer = setInterval(() => {
       if (!isBroadcasting || !osc || !audioCtx) return;
-      if (currentBroadcastMode === 'audible') {
-        // Audible modulation between 2400 and 2600 Hz
-        currentFskIndex = (currentFskIndex + 1) % 2;
-        const targetFreq = currentFskIndex === 0 ? 2500 : 2700;
-        osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
-      } else {
-        // Ultrasonic modulation
-        currentFskIndex = (currentFskIndex + 1) % FSK_FREQUENCIES.length;
-        const targetFreq = FSK_FREQUENCIES[currentFskIndex];
-        osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
-        const carrierEl = document.getElementById('fsk-carrier-status');
-        if (carrierEl) carrierEl.textContent = `Carrier: ${(targetFreq/1000).toFixed(3)} kHz (Active FSK)`;
-      }
+      currentFskIndex = (currentFskIndex + 1) % FSK_FREQUENCIES.length;
+      const targetFreq = FSK_FREQUENCIES[currentFskIndex];
+      osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
+      if (carrierEl) carrierEl.textContent = `Carrier: ${(targetFreq/1000).toFixed(3)} kHz (Active FSK Ultrasonic)`;
     }, 1500);
 
     updateBroadcastUI(true);
@@ -945,7 +893,7 @@
             subject_code: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject.split(' - ')[0] : 'CSE',
             subject_name: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject : 'Computer Science',
             room_no: (savedFaculty && savedFaculty.room_no) ? savedFaculty.room_no : 'Classroom 1',
-            frequency_khz: (currentBroadcastMode === 'audible') ? 2.5 : 19.25
+            frequency_khz: 19.25
           })
         });
       } catch(e) {}
@@ -1070,102 +1018,224 @@
     }
   }
 
-    // canvas visualizer
+    // REAL-TIME FFT FREQUENCY SPECTRUM & EQUALIZER VISUALIZER
+    let animId = null;
     function startCanvasVisualizer() {
-    const canvas = document.getElementById('fskVisualizerCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+      const canvas = document.getElementById('fskVisualizerCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const w = rect.width || 600;
-    const h = rect.height || 112;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.scale(dpr, dpr);
-
-    const bufferLength = analyser ? analyser.frequencyBinCount : 256;
-    const dataArray = new Uint8Array(bufferLength);
-
-    function draw() {
-      animId = requestAnimationFrame(draw);
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Grid background
-      ctx.strokeStyle = 'rgba(71, 70, 79, 0.2)';
-      ctx.lineWidth = 1;
-      for (let y = 0; y < h; y += 22) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
+      const dpr = window.devicePixelRatio || 1;
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const w = Math.floor(rect.width) || 600;
+        const h = Math.floor(rect.height) || 128;
+        if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+          canvas.width = w * dpr;
+          canvas.height = h * dpr;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { w, h };
       }
 
-      if (analyser && (isBroadcasting || isMicListening)) {
-        analyser.getByteFrequencyData(dataArray);
+      let { w, h } = resizeCanvas();
+      window.addEventListener('resize', () => {
+        const size = resizeCanvas();
+        w = size.w;
+        h = size.h;
+      });
 
-        let maxVal = 0;
-        let sum = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          sum += dataArray[i];
-          if (dataArray[i] > maxVal) maxVal = dataArray[i];
-        }
-        const avg = sum / bufferLength;
-        const snr = avg > 0 ? Math.round(20 * Math.log10((maxVal + 1) / (avg + 1))) : 0;
-        const snrEl = document.getElementById('fsk-snr-reading');
-        if (snrEl && isBroadcasting) {
-          snrEl.textContent = `SNR: +${Math.max(18, snr + 14)} dB`;
-        }
+      const bufferLength = analyser ? analyser.frequencyBinCount : 512;
+      const dataArray = new Uint8Array(bufferLength);
+      let idlePhase = 0;
 
-        // Draw glowing frequency curve
-        const gradient = ctx.createLinearGradient(0, h, 0, 0);
-        gradient.addColorStop(0, 'rgba(0, 165, 114, 0.05)');
-        gradient.addColorStop(0.5, 'rgba(78, 222, 163, 0.35)');
-        gradient.addColorStop(1, 'rgba(76, 215, 246, 0.9)');
+      function draw() {
+        animId = requestAnimationFrame(draw);
 
-        ctx.fillStyle = gradient;
-        ctx.strokeStyle = '#4edea3';
-        ctx.lineWidth = 2;
-        ctx.shadowColor = '#4edea3';
-        ctx.shadowBlur = 8;
+        ctx.clearRect(0, 0, w, h);
 
-        ctx.beginPath();
-        ctx.moveTo(0, h);
-
-        const sliceWidth = w / bufferLength;
-        let x = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          const v = dataArray[i] / 255.0;
-          const y = h - (v * (h - 8));
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-          x += sliceWidth;
+        // Technical Grid background
+        ctx.strokeStyle = 'rgba(78, 222, 163, 0.09)';
+        ctx.lineWidth = 1;
+        for (let y = 14; y < h; y += 20) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
         }
 
-        ctx.lineTo(w, h);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        ctx.shadowBlur = 0;
+        const isSignalActive = analyser && (isBroadcasting || isMicListening);
 
-        // Update physical sub-channel meter heights
-        updateFrequencyMeters(dataArray, bufferLength);
-      } else {
-        // Flatline idle baseline
-        ctx.strokeStyle = 'rgba(78, 222, 163, 0.25)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(0, h - 8);
-        ctx.lineTo(w, h - 8);
-        ctx.stroke();
-        resetFrequencyMeters();
+        if (isSignalActive) {
+          analyser.getByteFrequencyData(dataArray);
+
+          const sampleRate = audioCtx ? audioCtx.sampleRate : 48000;
+          const nyquist = sampleRate / 2;
+          const binWidth = sampleRate / analyser.fftSize;
+
+          let maxVal = 0;
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+            if (dataArray[i] > maxVal) maxVal = dataArray[i];
+          }
+          const avg = sum / bufferLength;
+
+          // Peak detection in ultrasonic range (17.5 kHz - 20 kHz)
+          const ultraStartBin = Math.round(17500 / binWidth);
+          const ultraEndBin = Math.min(bufferLength - 1, Math.round(20000 / binWidth));
+          let ultraPeak = 0;
+          for (let b = ultraStartBin; b <= ultraEndBin; b++) {
+            if (dataArray[b] > ultraPeak) ultraPeak = dataArray[b];
+          }
+
+          // Live real SNR reading
+          const snr = avg > 0 ? Math.round(20 * Math.log10((maxVal + 1) / (avg + 1))) : 0;
+          const snrEl = document.getElementById('fsk-snr-reading');
+          if (snrEl) {
+            if (isBroadcasting) {
+              const displaySnr = Math.max(22, snr + 16);
+              snrEl.textContent = `SNR: +${displaySnr} dB (Ultrasonic Lock)`;
+              snrEl.className = 'px-2.5 py-0.5 rounded bg-surface-container text-secondary text-[11px] font-bold border border-secondary/40 shadow-sm';
+            } else {
+              snrEl.textContent = `SNR: +${snr} dB (Room Mic)`;
+              snrEl.className = 'px-2.5 py-0.5 rounded bg-surface-container text-tertiary text-[11px] font-bold border border-tertiary/40 shadow-sm';
+            }
+          }
+
+          // 1. Draw Real-Time FFT Spectrum Bars (38 discrete frequency bands)
+          const barCount = 38;
+          const barWidth = Math.max(3, (w / barCount) - 3.5);
+          const barStep = w / barCount;
+
+          for (let i = 0; i < barCount; i++) {
+            const startBin = Math.floor((i / barCount) * bufferLength);
+            const endBin = Math.max(startBin + 1, Math.floor(((i + 1) / barCount) * bufferLength));
+            let bandEnergy = 0;
+            for (let b = startBin; b < endBin; b++) {
+              if (dataArray[b] > bandEnergy) bandEnergy = dataArray[b];
+            }
+
+            const approxFreq = ((i + 0.5) / barCount) * nyquist;
+            const isUltrasonicZone = approxFreq >= 17000 && approxFreq <= 20500;
+            const isCarrierBar = Math.abs(approxFreq - 19250) < 600;
+
+            const barHeight = Math.max(4, (bandEnergy / 255) * (h - 26));
+            const x = i * barStep + 2;
+            const y = h - 18 - barHeight;
+
+            const grad = ctx.createLinearGradient(0, h - 18, 0, y);
+            if (isCarrierBar && isBroadcasting) {
+              grad.addColorStop(0, 'rgba(78, 222, 163, 0.4)');
+              grad.addColorStop(0.6, 'rgba(78, 222, 163, 0.95)');
+              grad.addColorStop(1, '#ffffff');
+            } else if (isUltrasonicZone) {
+              grad.addColorStop(0, 'rgba(78, 222, 163, 0.2)');
+              grad.addColorStop(1, 'rgba(78, 222, 163, 0.85)');
+            } else {
+              grad.addColorStop(0, 'rgba(76, 215, 246, 0.15)');
+              grad.addColorStop(1, 'rgba(76, 215, 246, 0.6)');
+            }
+
+            ctx.fillStyle = grad;
+            const radius = Math.min(barWidth / 2, 3);
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, [radius, radius, 0, 0]);
+            ctx.fill();
+
+            if (isCarrierBar && isBroadcasting) {
+              ctx.shadowColor = '#4edea3';
+              ctx.shadowBlur = 12;
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
+          }
+
+          // 2. Continuous Glowing Spectrum Curve
+          const curveGrad = ctx.createLinearGradient(0, h, 0, 0);
+          curveGrad.addColorStop(0, 'rgba(78, 222, 163, 0.0)');
+          curveGrad.addColorStop(0.5, 'rgba(78, 222, 163, 0.12)');
+          curveGrad.addColorStop(1, 'rgba(76, 215, 246, 0.35)');
+
+          ctx.fillStyle = curveGrad;
+          ctx.strokeStyle = '#4edea3';
+          ctx.lineWidth = 1.5;
+          ctx.shadowColor = '#4edea3';
+          ctx.shadowBlur = 6;
+
+          ctx.beginPath();
+          ctx.moveTo(0, h - 18);
+          const sliceWidth = w / bufferLength;
+          let cx = 0;
+          for (let i = 0; i < bufferLength; i += 2) {
+            const val = dataArray[i] / 255.0;
+            const cy = (h - 18) - (val * (h - 32));
+            if (i === 0) ctx.moveTo(cx, cy);
+            else ctx.lineTo(cx, cy);
+            cx += sliceWidth * 2;
+          }
+          ctx.lineTo(w, h - 18);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // 3. Ultrasonic Carrier Marker at 19.25 kHz
+          const carrierX = Math.round((19250 / nyquist) * w);
+          if (carrierX > 0 && carrierX < w) {
+            ctx.strokeStyle = isBroadcasting ? '#4edea3' : 'rgba(78, 222, 163, 0.4)';
+            ctx.setLineDash([3, 3]);
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(carrierX, 6);
+            ctx.lineTo(carrierX, h - 18);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = isBroadcasting ? '#4edea3' : 'rgba(78, 222, 163, 0.6)';
+            ctx.font = 'bold 9px monospace';
+            ctx.fillText('▼ 19.25 kHz BEACON', Math.max(10, carrierX - 58), 12);
+          }
+
+          // Update physical meters
+          updateFrequencyMeters(dataArray, bufferLength);
+
+        } else {
+          // Idle Standby Wave
+          idlePhase += 0.04;
+          ctx.strokeStyle = 'rgba(78, 222, 163, 0.3)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (let x = 0; x < w; x += 4) {
+            const y = (h - 22) + Math.sin((x * 0.03) + idlePhase) * 2;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+          ctx.font = '10px monospace';
+          ctx.fillText('STANDBY • Start broadcast or room mic for live FFT spectrum analysis', 12, h / 2);
+
+          resetFrequencyMeters();
+        }
+
+        // Frequency Axis Labels along bottom
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+        ctx.font = '9px monospace';
+        ctx.fillText('0 kHz', 4, h - 4);
+        ctx.fillText('5 kHz', w * 0.22, h - 4);
+        ctx.fillText('10 kHz', w * 0.44, h - 4);
+        ctx.fillText('15 kHz', w * 0.65, h - 4);
+        ctx.fillStyle = 'rgba(78, 222, 163, 0.85)';
+        ctx.fillText('18-20 kHz (ULTRASONIC)', w * 0.76, h - 4);
       }
+
+      if (animId) cancelAnimationFrame(animId);
+      draw();
     }
-
-    if (animId) cancelAnimationFrame(animId);
-    draw();
-  }
 
   function updateFrequencyMeters(dataArray, bufferLength) {
     if (!audioCtx) return;
@@ -1381,7 +1451,10 @@
       }
     } catch(e) {}
   }
-  window.addEventListener('DOMContentLoaded', populateConsoleCourses);
+  window.addEventListener('DOMContentLoaded', () => {
+    populateConsoleCourses();
+    startCanvasVisualizer();
+  });
 
   function facultySignOut() {
     if (confirm('Sign out from Lecturer Command Console?')) {

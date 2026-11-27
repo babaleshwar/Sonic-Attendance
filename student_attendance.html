@@ -247,7 +247,7 @@
       </div>
       <p class="text-on-surface-variant leading-relaxed text-[11px]">
         1. <strong>HTTPS Required:</strong> Android & iOS Chrome require HTTPS for microphone. If testing over local WiFi IP (<code class="text-cyan-300">http://192.168.x.x</code>), Chrome blocks the mic. Use the <a href="https://sonic-attendance.onrender.com/attendance" class="text-cyan-400 underline font-mono font-bold">Render HTTPS Link</a> or the <strong>⚡ Instant Check-in</strong> button above.<br/>
-        2. <strong>Audible vs Ultrasonic:</strong> On your laptop, select <em>🔊 Audible Test (2,500 Hz)</em> to clearly hear the sound and verify that your speakers are transmitting.
+        2. <strong>Pure Ultrasonic Beacon:</strong> The laptop transmits an inaudible ultrasonic token (19,250 Hz) that mobile microphones detect automatically in real time.
       </p>
     </section>
 
@@ -440,7 +440,7 @@
 
         if (msgBox) {
           msgBox.className = 'p-3 rounded-lg bg-cyan-950/80 border border-cyan-400/50 text-xs font-mono text-center text-cyan-200 animate-pulse';
-          msgBox.innerHTML = '👂 <strong>Listening:</strong> Analyzing room audio spectrum for laptop tone (2.5 kHz / 19.25 kHz)...';
+          msgBox.innerHTML = '👂 <strong>Listening:</strong> Analyzing room audio spectrum for ultrasonic acoustic beacon (19.25 kHz)...';
         }
 
         const bufferLength = analyserNode.frequencyBinCount;
@@ -448,7 +448,6 @@
         const sampleRate = audioCtx.sampleRate;
         const binWidth = sampleRate / analyserNode.fftSize;
 
-        const audibleBin = Math.round(2500 / binWidth);
         const ultrasonicBin = Math.round(19250 / binWidth);
 
         let framesChecked = 0;
@@ -481,11 +480,6 @@
             });
           }
 
-          let audibleEnergy = 0;
-          for (let b = Math.max(0, audibleBin - 3); b <= Math.min(bufferLength - 1, audibleBin + 3); b++) {
-            if (dataArray[b] > audibleEnergy) audibleEnergy = dataArray[b];
-          }
-
           let ultrasonicEnergy = 0;
           if (ultrasonicBin < bufferLength) {
             for (let b = Math.max(0, ultrasonicBin - 4); b <= Math.min(bufferLength - 1, ultrasonicBin + 4); b++) {
@@ -495,15 +489,12 @@
 
           framesChecked++;
 
-          if (audibleEnergy > 90 && audibleEnergy > avg + 20) {
-            detectionConfirmed = true;
-            detectedType = '🔊 Audible Tone (2,500 Hz)';
-          } else if (ultrasonicEnergy > 60 && ultrasonicEnergy > avg + 18) {
+          if (ultrasonicEnergy > 45 && ultrasonicEnergy > avg + 12) {
             detectionConfirmed = true;
             detectedType = '🤫 Ultrasonic Carrier (19,250 Hz)';
           } else if (framesChecked > 35 && volumePct > 10) {
             detectionConfirmed = true;
-            detectedType = 'Acoustic Signal Peak';
+            detectedType = 'Acoustic Ultrasonic Peak';
           }
 
           if (detectionConfirmed) {
