@@ -268,7 +268,6 @@ Sonnic_Attendance/
 ├── run_server.bat              # 1-Click Windows execution script
 ├── logo.png                    # Institutional badge & icon
 ├── sonicattend.db              # Active SQLite Database (Currently clean for timetable)
-├── sonicattend_backup.db       # Full backup of prior test datasets
 └── PROJECT_PRD.md              # Complete Project Documentation & PRD (This file)
 ```
 
@@ -287,7 +286,6 @@ Sonnic_Attendance/
 * **Purged Dummy & Corrupted Records**:
   * Removed duplicate faculty entries, test USNs (`2VS24CS048`, `2VS24CS099`), and legacy mock strings.
   * Formatted database tables into strict VTU structures (`students`, `faculty`, `courses`, `timetable`, `class_sessions`, `attendance_records`, `device_rebinding_tickets`).
-  * Backed up initial testing state to `sonicattend_backup.db`.
   * Wiped all 7 active tables in `sonicattend.db` down to 0 rows upon user request, ready for fresh college timetable ingestion.
 
 ### 7.3 Backend Syntax & Compilation Fixes

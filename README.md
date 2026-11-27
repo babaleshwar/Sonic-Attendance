@@ -64,7 +64,6 @@ Sonnic_Attendance/
 ├── run_server.bat              # 1-Click Windows execution script
 ├── logo.png                    # College & system emblem
 ├── sonicattend.db              # Active SQLite Database
-├── sonicattend_backup.db       # Safe backup of database state
 ├── PROJECT_PRD.md              # Detailed Product Requirements Document & Changelog
 ├── SONICATTEND_MASTER_PROMPT.xml # Master XML specification prompt for AI builders / Horizon
 └── README.md                   # This project overview documentation
