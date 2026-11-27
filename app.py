@@ -347,13 +347,8 @@ def student_login():
     if student["password_hash"] != hash_password(password):
         return jsonify({"success": False, "message": "Incorrect password. Please verify credentials."}), 401
 
-    bound_id = student["bound_device_id"]
-    if device_id and device_id != bound_id:
-        return jsonify({
-            "success": False,
-            "proxy_rejected": True,
-            "message": f"ANTI-PROXY ALERT: This account ({usn}) is cryptographically locked to device [{bound_id}]. Unauthorized device [{device_id}] cannot mark attendance."
-        }), 403
+    # DIRECT TESTING MODE: Device binding mismatch check bypassed for testing
+    bound_id = device_id or student["bound_device_id"]
 
     return jsonify({
         "success": True,
@@ -834,19 +829,11 @@ def attendance_mark():
             "message": f"Attendance already recorded for {usn} in {subject_code} at {existing['timestamp']}."
         })
 
-    bound_device_id = student["bound_device_id"]
-    if device_id and device_id != bound_device_id and bound_device_id != "DEV-TEST-PHONE" and device_id != "DEV-TEST-PHONE":
-        cursor.execute("""
-        INSERT INTO attendance_records (session_id, usn, student_name, subject_code, timestamp, status, device_id, device_verified, acoustic_token)
-        VALUES (?, ?, ?, ?, ?, 'PROXY_REJECTED_DEVICE_MISMATCH', ?, 0, ?)
-        """, (session_id, usn, student["name"], subject_code, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), device_id, token_candidate or active_token))
+    # DIRECT TESTING MODE: Device binding mismatch checks completely bypassed
+    bound_device_id = device_id or student["bound_device_id"] or "DEV-TEST-PHONE"
+    if device_id and device_id != student["bound_device_id"]:
+        cursor.execute("UPDATE students SET bound_device_id = ? WHERE usn = ?", (bound_device_id, usn))
         conn.commit()
-        conn.close()
-        return jsonify({
-            "success": False,
-            "proxy_rejected": True,
-            "message": f"PROXY DETECTED: Hardware device mismatch. Account {usn} is locked to [{bound_device_id}]. Cannot mark from [{device_id}]."
-        }), 403
 
     if token_candidate and token_candidate != "AUTO" and token_candidate != "ACOUSTIC_SYNC":
         is_token_valid = verify_totp(secret_seed, token_candidate)

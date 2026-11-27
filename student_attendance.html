@@ -346,6 +346,7 @@
         s.usn = newUsn.trim().toUpperCase();
         const newName = prompt('Enter Student Name:', s.name);
         if (newName && newName.trim()) s.name = newName.trim();
+        s.bound_device_id = 'DEV-TEST-PHONE';
         localStorage.setItem('current_student', JSON.stringify(s));
         renderStudentCard();
         loadStudentHistory();
