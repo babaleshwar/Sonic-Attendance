@@ -482,19 +482,26 @@
 
           let ultrasonicEnergy = 0;
           if (ultrasonicBin < bufferLength) {
-            for (let b = Math.max(0, ultrasonicBin - 4); b <= Math.min(bufferLength - 1, ultrasonicBin + 4); b++) {
+            for (let b = Math.max(0, ultrasonicBin - 5); b <= Math.min(bufferLength - 1, ultrasonicBin + 5); b++) {
               if (dataArray[b] > ultrasonicEnergy) ultrasonicEnergy = dataArray[b];
             }
           }
 
           framesChecked++;
 
-          if (ultrasonicEnergy > 45 && ultrasonicEnergy > avg + 12) {
+          // Live spectrum status display during listening
+          if (framesChecked % 6 === 0 && msgBox) {
+            msgBox.innerHTML = `👂 <strong>Analyzing Room Audio:</strong> 19.25 kHz Ultrasonic Signal: <span class="font-bold ${ultrasonicEnergy > 30 ? 'text-emerald-300' : 'text-cyan-300'}">${ultrasonicEnergy}</span> (Threshold: 35)`;
+          }
+
+          // STRICT ACOUSTIC VERIFICATION:
+          // The phone's microphone MUST physically detect energy in the 19,250 Hz ultrasonic carrier!
+          // Normal human speech/fans have 0 energy at 19.25 kHz. Only the lecturer laptop creates this!
+          const isRealUltrasonicDetected = (ultrasonicEnergy >= 35 && ultrasonicEnergy > avg + 12);
+
+          if (isRealUltrasonicDetected) {
             detectionConfirmed = true;
-            detectedType = '🤫 Ultrasonic Carrier (19,250 Hz)';
-          } else if (framesChecked > 35 && volumePct > 10) {
-            detectionConfirmed = true;
-            detectedType = 'Acoustic Ultrasonic Peak';
+            detectedType = '🤫 Inaudible Ultrasonic Carrier (19,250 Hz)';
           }
 
           if (detectionConfirmed) {
@@ -503,9 +510,11 @@
             return;
           }
 
-          if (framesChecked > 100) {
+          // Out-of-Range Failure: If no ultrasonic carrier is heard after ~4 seconds (240 frames),
+          // FAIL! Student is outside the classroom (e.g. 3-6 rooms away) or laptop is not transmitting!
+          if (framesChecked > 240) {
             stopListening();
-            onSignalDetected('Classroom Ambient Sync');
+            onSignalFailed('OUT OF RANGE: No 19.25 kHz ultrasonic signal detected. You must be physically inside Classroom 304 near the lecturer laptop speakers.');
             return;
           }
 
@@ -535,6 +544,28 @@
         try { micStream.getTracks().forEach(t => t.stop()); } catch(e) {}
         micStream = null;
       }
+    }
+
+    function onSignalFailed(reason) {
+      const msgBox = document.getElementById('detection-msg-box');
+      const btnLabel = document.getElementById('btn-sync-label');
+      const btnIcon = document.getElementById('btn-sync-icon');
+      const syncBtn = document.getElementById('attendanceBtn');
+
+      if (btnLabel) btnLabel.textContent = 'OUT OF RANGE';
+      if (btnIcon) btnIcon.textContent = 'volume_off';
+      if (syncBtn) {
+        syncBtn.style.boxShadow = '0 0 35px rgba(239, 68, 68, 0.75)';
+        syncBtn.style.borderColor = '#ef4444';
+        syncBtn.classList.remove('scale-95');
+      }
+
+      if (msgBox) {
+        msgBox.className = 'p-3.5 rounded-lg bg-red-950/90 border border-red-500/60 text-xs font-mono text-center text-red-200';
+        msgBox.innerHTML = `❌ <strong>ACOUSTIC VERIFICATION REJECTED:</strong><br/><span class="text-red-300 text-[11px]">${reason}</span>`;
+      }
+
+      showToast('❌ Ultrasonic beacon not detected. You must be physically inside the classroom near the lecturer laptop.', 'error', 'Out of Range');
     }
 
     async function onSignalDetected(signalInfo) {
