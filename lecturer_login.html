@@ -11,9 +11,11 @@
   
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
-    
-
+  <script>
+    (function(){const w=console.warn;console.warn=function(...a){if(a[0]&&typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;w.apply(console,a);};})();
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
     // load courses
     async function loadLecCourses() {
       try {
@@ -29,8 +31,7 @@
       } catch(e) {}
     }
     window.addEventListener('DOMContentLoaded', loadLecCourses);
-
-</script>
+  </script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -84,7 +85,7 @@
     window.addEventListener('DOMContentLoaded', loadLecCourses);
 
 </script>
-  <link rel="icon" type="image/png" href="logo.png"/>
+  <link rel="icon" type="image/png" href="/logo.png"/>
 </head>
 <body class="bg-background text-on-surface min-h-screen selection:bg-secondary-container selection:text-on-secondary antialiased font-['Inter',sans-serif] flex flex-col relative overflow-x-hidden">
 
@@ -96,7 +97,7 @@
   <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 py-2.5 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
     <div class="flex items-center gap-3">
       <a href="/" class="flex items-center gap-3 group">
-        <img src="logo.png" alt="SonicAttend Logo" class="w-11 h-11 sm:w-12 sm:h-12 object-contain drop-shadow-[0_2px_14px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform flex-shrink-0" />
+        <img src="/logo.png" alt="SonicAttend Logo" class="w-11 h-11 sm:w-12 sm:h-12 object-contain drop-shadow-[0_2px_14px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform flex-shrink-0" />
         <div class="flex flex-col">
           <span class="text-base sm:text-lg font-bold text-on-surface tracking-tight leading-snug">SonicAttend</span>
           <span class="text-[11px] text-on-surface-variant leading-none">VSMSRKITE Nipani • Faculty Command</span>

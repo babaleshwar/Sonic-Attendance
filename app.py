@@ -263,6 +263,12 @@ def db_summary():
         "recent_attendance": attendance
     })
 
+@app.route("/logo.png")
+@app.route("/faculty/logo.png")
+@app.route("/attendance/logo.png")
+def serve_logo_asset():
+    return send_from_directory(BASE_DIR, "logo.png", mimetype="image/png")
+
 @app.route("/<path:filename>")
 def serve_static(filename):
     if os.path.exists(os.path.join(BASE_DIR, filename)):
