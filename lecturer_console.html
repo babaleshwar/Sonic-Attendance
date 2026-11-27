@@ -157,10 +157,10 @@
 </div>
 </div>
 
-<button class="w-full py-2.5 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-bright text-tertiary text-label-md font-label-md flex items-center justify-center gap-2 border border-tertiary/20 shadow-sm transition-colors active:scale-[0.99]">
-<span class="material-symbols-outlined text-tertiary">add_circle</span>
-<span>New Session</span>
-</button>
+<a href="/database" class="w-full py-2.5 px-space-md rounded-lg bg-emerald-950/60 hover:bg-emerald-900/60 text-secondary text-label-md font-label-md flex items-center justify-center gap-2 border border-secondary/40 shadow-sm transition-colors">
+<span class="material-symbols-outlined text-secondary">database</span>
+<span>Live Database Explorer</span>
+</a>
 
 <div class="flex flex-col gap-1.5">
 
@@ -174,7 +174,7 @@
 <span class="text-label-md font-label-md">Active Roster</span>
 </a>
 
-<a class="flex items-center gap-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="openEmergencyQRModal()">
 <span class="material-symbols-outlined">key</span>
 <span class="text-label-md font-label-md">Cryptographic Keys</span>
 </a>
@@ -184,9 +184,9 @@
 <span class="text-label-md font-label-md">VTU Compliance Reports</span>
 </a>
 
-<a class="flex items-center gap-space-sm text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
-<span class="material-symbols-outlined">tune</span>
-<span class="text-label-md font-label-md">Transmitter Settings</span>
+<a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" href="/database">
+<span class="material-symbols-outlined">table_view</span>
+<span class="text-label-md font-label-md">SQLite Tables (Live)</span>
 </a>
 </div>
 </div>
@@ -268,12 +268,31 @@
 </div>
 
 <div class="bg-surface-container-lowest/90 rounded-xl p-space-md border border-outline-variant/60 my-space-md">
+<!-- FREQUENCY MODE SELECTOR & SPEAKER TEST CONTROLS -->
+<div class="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-lg bg-surface-container/70 border border-outline-variant/40 mb-3">
+  <div class="flex items-center gap-2">
+    <span class="text-xs font-bold text-on-surface">Frequency Mode:</span>
+    <button type="button" id="btn-mode-audible" onclick="setBroadcastMode('audible')" class="px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs border border-cyan-400 shadow-sm transition-all cursor-pointer">
+      🔊 Audible Test (2,500 Hz)
+    </button>
+    <button type="button" id="btn-mode-ultra" onclick="setBroadcastMode('ultrasonic')" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white transition-all cursor-pointer">
+      🤫 Ultrasonic (19,250 Hz)
+    </button>
+  </div>
+  <div class="flex items-center gap-2">
+    <button type="button" onclick="testSpeakerBeep()" class="px-3 py-1.5 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-200 border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm">
+      <span class="material-symbols-outlined text-[15px]">volume_up</span>
+      Test Laptop Speaker (2 kHz Beep)
+    </button>
+  </div>
+</div>
+
 <div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mb-2">
 <span class="flex items-center gap-1.5 font-mono">
 <span id="fsk-led" class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
 <span class="text-on-surface font-bold">REAL-TIME FFT SPECTRAL DENSITY</span>
 </span>
-<span id="fsk-mode-badge" class="px-2 py-0.5 rounded bg-surface-container text-tertiary font-mono text-[11px] border border-outline-variant/30">Web Audio FSK Synthesizer</span>
+<span id="fsk-mode-badge" class="px-2 py-0.5 rounded bg-surface-container text-tertiary font-mono text-[11px] border border-outline-variant/30">🔊 Audible Test Mode (2,500 Hz)</span>
 </div>
 
 <div class="relative w-full rounded-xl overflow-hidden border border-secondary/30 bg-gradient-to-b from-surface-container-low/95 to-surface-container-lowest/95 p-4 flex flex-col gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
@@ -464,7 +483,7 @@
 <span class="text-on-surface-variant flex items-center gap-1 font-mono">
 <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Zero Replay Security Active
             </span>
-<button class="text-tertiary hover:underline font-semibold flex items-center gap-0.5">
+<button onclick="openEmergencyQRModal()" class="text-tertiary hover:underline font-semibold flex items-center gap-0.5 cursor-pointer">
 <span>View Key Registry</span>
 <span class="material-symbols-outlined text-xs">chevron_right</span>
 </button>
@@ -523,10 +542,10 @@
 </div>
 <div class="flex items-center justify-between border-t border-outline-variant/40 pt-2 text-label-sm font-label-sm">
 <span id="stat-absent-pending" class="text-error/90 font-medium">-- pending</span>
-<button class="text-tertiary hover:underline font-semibold flex items-center gap-0.5">
-<span class="material-symbols-outlined text-xs">notifications_active</span>
-<span>Quick Ping</span>
-</button>
+<a href="/database" class="text-secondary hover:underline font-semibold flex items-center gap-0.5 text-xs font-mono">
+<span class="material-symbols-outlined text-xs">database</span>
+<span>Live DB Records</span>
+</a>
 </div>
 </div>
 
@@ -575,8 +594,8 @@
 <button id="btn-filter-verified" onclick="setRosterFilter('VERIFIED')" class="px-2.5 py-1 rounded hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer">Verified (0)</button>
 <button id="btn-filter-pending" onclick="setRosterFilter('PENDING')" class="px-2.5 py-1 rounded hover:text-on-surface text-on-surface-variant transition-colors cursor-pointer">Pending (0)</button>
 </div>
-<button class="p-2 rounded-lg bg-surface-container border border-outline-variant hover:bg-surface-bright text-on-surface-variant hover:text-on-surface transition-colors" title="Export current view">
-<span class="material-symbols-outlined text-base">filter_list</span>
+<button onclick="syncRoster()" class="p-2 rounded-lg bg-surface-container border border-outline-variant hover:bg-surface-bright text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer" title="Refresh Live Roster">
+<span class="material-symbols-outlined text-base">refresh</span>
 </button>
 </div>
 </div>
@@ -615,9 +634,10 @@
             <span id="roster-footer-summary">Loading registered students count...</span>
           </div>
 <div class="flex items-center gap-2">
-<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant text-outline disabled:opacity-40" disabled="">Previous</button>
-<span class="px-2 font-mono text-xs">Page 1 of 10</span>
-<button class="px-3 py-1 rounded bg-surface-container border border-outline-variant hover:text-on-surface text-on-surface-variant">Next</button>
+<a href="/database" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-secondary/40 text-secondary text-xs font-mono font-bold flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-sm">database</span>
+<span>View Full SQLite Database</span>
+</a>
 </div>
 </div>
 </section>
@@ -773,6 +793,51 @@
     }
   }
 
+  let currentBroadcastMode = 'audible'; // 'audible' (2,500 Hz) or 'ultrasonic' (19,250 Hz)
+  let broadcastGainValue = 0.55; // Boosted physical acoustic gain
+
+  function setBroadcastMode(mode) {
+    currentBroadcastMode = mode;
+    const btnAudible = document.getElementById('btn-mode-audible');
+    const btnUltra = document.getElementById('btn-mode-ultra');
+    const carrierEl = document.getElementById('fsk-carrier-status');
+    const modeBadge = document.getElementById('fsk-mode-badge');
+
+    if (mode === 'audible') {
+      if (btnAudible) btnAudible.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs border border-cyan-400 shadow-sm cursor-pointer';
+      if (btnUltra) btnUltra.className = 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white cursor-pointer';
+      if (carrierEl) carrierEl.textContent = 'Carrier: 2,500 Hz (Audible Speaker Test)';
+      if (modeBadge) modeBadge.textContent = '🔊 Audible Test Mode (2,500 Hz)';
+      showToast('🔊 Switched to Audible Test Mode (2,500 Hz). The sound will be clearly audible to your ears and mobile mic!', 'info', 'Audible Mode');
+    } else {
+      if (btnUltra) btnUltra.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs border border-emerald-400 shadow-sm cursor-pointer';
+      if (btnAudible) btnAudible.className = 'px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-semibold text-xs border border-outline-variant/40 hover:text-white cursor-pointer';
+      if (carrierEl) carrierEl.textContent = 'Carrier: 19,250 Hz (Inaudible Ultrasonic)';
+      if (modeBadge) modeBadge.textContent = '🤫 Inaudible Ultrasonic (19,250 Hz)';
+      showToast('🤫 Switched to Inaudible Ultrasonic Mode (19,250 Hz). Sound will be near-ultrasound above human hearing.', 'info', 'Ultrasonic Mode');
+    }
+
+    if (isBroadcasting && osc && audioCtx) {
+      const target = (currentBroadcastMode === 'audible') ? 2500 : 19250;
+      osc.frequency.setValueAtTime(target, audioCtx.currentTime);
+    }
+  }
+
+  function testSpeakerBeep() {
+    initAudioEngine();
+    const testOsc = audioCtx.createOscillator();
+    const testGain = audioCtx.createGain();
+    testOsc.type = 'sine';
+    testOsc.frequency.setValueAtTime(2000, audioCtx.currentTime);
+    testGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    testGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+    testOsc.connect(testGain);
+    testGain.connect(audioCtx.destination);
+    testOsc.start();
+    testOsc.stop(audioCtx.currentTime + 1.2);
+    showToast("🔊 2,000 Hz Audible Beep played on laptop speaker! Can you hear it?", "success", "Speaker Sound Test");
+  }
+
   function startUltrasonicBroadcast() {
     initAudioEngine();
     if (!audioCtx || !analyser) return;
@@ -786,10 +851,10 @@
     gainNode = audioCtx.createGain();
 
     osc.type = 'sine';
-    const carrier = FSK_FREQUENCIES[currentFskIndex];
-    osc.frequency.setValueAtTime(carrier, audioCtx.currentTime);
+    const targetFreq = (currentBroadcastMode === 'audible') ? 2500 : 19250;
+    osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
 
-    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(broadcastGainValue, audioCtx.currentTime);
 
     osc.connect(gainNode);
     gainNode.connect(analyser);
@@ -801,14 +866,19 @@
     if (fskModulatorTimer) clearInterval(fskModulatorTimer);
     fskModulatorTimer = setInterval(() => {
       if (!isBroadcasting || !osc || !audioCtx) return;
-      currentFskIndex = (currentFskIndex + 1) % FSK_FREQUENCIES.length;
-      const targetFreq = FSK_FREQUENCIES[currentFskIndex];
-      osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
-
-      const carrierEl = document.getElementById('fsk-carrier-status');
-      if (carrierEl) carrierEl.textContent = `Carrier: ${(targetFreq/1000).toFixed(3)} kHz (Active FSK)`;
-      const pilotFooter = document.getElementById('fsk-pilot-footer');
-      if (pilotFooter) pilotFooter.textContent = `Pilot Wave: Synced (${(targetFreq/1000).toFixed(3)} kHz)`;
+      if (currentBroadcastMode === 'audible') {
+        // Audible modulation between 2400 and 2600 Hz
+        currentFskIndex = (currentFskIndex + 1) % 2;
+        const targetFreq = currentFskIndex === 0 ? 2500 : 2700;
+        osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
+      } else {
+        // Ultrasonic modulation
+        currentFskIndex = (currentFskIndex + 1) % FSK_FREQUENCIES.length;
+        const targetFreq = FSK_FREQUENCIES[currentFskIndex];
+        osc.frequency.linearRampToValueAtTime(targetFreq, audioCtx.currentTime + 0.04);
+        const carrierEl = document.getElementById('fsk-carrier-status');
+        if (carrierEl) carrierEl.textContent = `Carrier: ${(targetFreq/1000).toFixed(3)} kHz (Active FSK)`;
+      }
     }, 1500);
 
     updateBroadcastUI(true);
@@ -875,7 +945,7 @@
             subject_code: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject.split(' - ')[0] : 'CSE',
             subject_name: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject : 'Computer Science',
             room_no: (savedFaculty && savedFaculty.room_no) ? savedFaculty.room_no : 'Classroom 1',
-            frequency_khz: 19.25
+            frequency_khz: (currentBroadcastMode === 'audible') ? 2.5 : 19.25
           })
         });
       } catch(e) {}

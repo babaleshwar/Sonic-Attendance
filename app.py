@@ -177,13 +177,13 @@ def add_cors_headers(response):
 def serve_index():
     return send_from_directory(BASE_DIR, "index.html")
 
+# DIRECT TESTING MODE: All login & registration routes permanently disabled & redirected
 @app.route("/login")
-def serve_login():
-    return send_from_directory(BASE_DIR, "login.html")
-
 @app.route("/register")
-def serve_register():
-    return send_from_directory(BASE_DIR, "student_register.html")
+@app.route("/login.html")
+@app.route("/student_register.html")
+def redirect_to_attendance():
+    return redirect("/attendance", code=302)
 
 @app.route("/attendance")
 def serve_attendance():
@@ -192,38 +192,21 @@ def serve_attendance():
 @app.route("/faculty")
 @app.route("/faculty/login")
 @app.route("/lecturer/login")
-def serve_faculty_login():
-    return send_from_directory(BASE_DIR, "lecturer_login.html")
-
+@app.route("/lecturer_login.html")
 @app.route("/faculty/console")
 @app.route("/lecturer/console")
+@app.route("/lecturer_console.html")
 def serve_faculty_console():
     return send_from_directory(BASE_DIR, "lecturer_console.html")
 
-# 301 Permanent Redirects for legacy .html URLs to clean URLs
+# 301 Permanent Redirects for legacy .html URLs
 @app.route("/index.html")
 def redirect_index():
     return redirect("/", code=301)
 
-@app.route("/login.html")
-def redirect_login():
-    return redirect("/login", code=301)
-
-@app.route("/student_register.html")
-def redirect_register():
-    return redirect("/register", code=301)
-
 @app.route("/student_attendance.html")
 def redirect_attendance():
     return redirect("/attendance", code=301)
-
-@app.route("/lecturer_login.html")
-def redirect_faculty_login():
-    return redirect("/faculty/login", code=301)
-
-@app.route("/lecturer_console.html")
-def redirect_faculty_console():
-    return redirect("/faculty/console", code=301)
 
 @app.route("/database")
 def serve_database_viewer():
@@ -873,7 +856,7 @@ def attendance_mark():
         # Auto-fetch active token for seamless simulation demo if requested
         token_candidate = get_current_totp(secret_seed)
 
-        now_str = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
+    now_str = datetime.now().strftime("%Y-%m-%d %I:%M:%S %p")
     cursor.execute("""
     INSERT INTO attendance_records (session_id, usn, student_name, subject_code, timestamp, status, device_id, device_verified, acoustic_token)
     VALUES (?, ?, ?, ?, ?, 'PRESENT', ?, 1, ?)
