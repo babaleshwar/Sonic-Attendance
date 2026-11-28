@@ -105,9 +105,9 @@
     </div>
 
     <nav class="hidden 2xl:flex items-center gap-5 text-xs font-semibold text-on-surface-variant">
-      <a class="text-tertiary font-bold border-b-2 border-tertiary pb-0.5 transition-colors" href="#live-session">Live Broadcast</a>
-      <a class="hover:text-on-surface transition-colors" href="#roster">Roster Telemetry</a>
-      <a class="hover:text-on-surface transition-colors" href="/api/export/vtu-report">VTU Exports</a>
+      <a class="text-secondary font-bold border-b-2 border-secondary pb-0.5 transition-colors" href="#live-session">Live Broadcast</a>
+      <a class="hover:text-on-surface transition-colors" href="#roster">Attendance Roster</a>
+      <a class="hover:text-on-surface transition-colors" href="/database">Live Database</a>
     </nav>
 
     <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
@@ -169,40 +169,36 @@
 <div class="flex flex-col gap-1.5">
 
 <a class="flex items-center gap-space-sm text-secondary bg-surface-container rounded-lg px-space-md py-space-sm font-semibold border-l-4 border-secondary cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-<span class="material-symbols-outlined">radar</span>
+<span class="material-symbols-outlined">sensors</span>
 <span class="text-label-md font-label-md">Acoustic Broadcast</span>
 </a>
 
 <a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="document.getElementById('roster').scrollIntoView({behavior:'smooth'})">
 <span class="material-symbols-outlined">groups</span>
-<span class="text-label-md font-label-md">Active Roster</span>
+<span class="text-label-md font-label-md">Live Roster</span>
 </a>
 
 <a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="openEmergencyQRModal()">
-<span class="material-symbols-outlined">key</span>
-<span class="text-label-md font-label-md">Cryptographic Keys</span>
+<span class="material-symbols-outlined">qr_code_2</span>
+<span class="text-label-md font-label-md">Fallback QR Code</span>
 </a>
 
 <a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" onclick="window.location.href='/api/export/vtu-report'">
-<span class="material-symbols-outlined">description</span>
-<span class="text-label-md font-label-md">VTU Compliance Reports</span>
+<span class="material-symbols-outlined">download</span>
+<span class="text-label-md font-label-md">Export Attendance CSV</span>
 </a>
 
-<a class="flex items-center gap-space-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium transition-colors cursor-pointer" href="/database">
-<span class="material-symbols-outlined">table_view</span>
-<span class="text-label-md font-label-md">SQLite Tables (Live)</span>
-</a>
 </div>
 </div>
 
 <div class="flex flex-col gap-1.5 pt-space-md border-t border-outline-variant/50">
 <a class="flex items-center gap-space-sm text-on-surface-variant hover:text-on-surface rounded-lg px-space-md py-space-sm font-medium hover:bg-surface-container transition-colors text-label-md font-label-md cursor-pointer" onclick="toggleMicListener()">
-<span class="material-symbols-outlined">equalizer</span>
-<span>System Diagnostics (Mic Test)</span>
+<span class="material-symbols-outlined">mic</span>
+<span>Microphone Test</span>
 </a>
 <a class="flex items-center gap-space-sm text-error hover:bg-error-container/20 rounded-lg px-space-md py-space-sm font-medium transition-colors text-label-md font-label-md cursor-pointer" onclick="facultySignOut()">
 <span class="material-symbols-outlined">logout</span>
-<span>Secure Sign Out</span>
+<span>Sign Out</span>
 </a>
 </div>
 </aside>
@@ -210,30 +206,30 @@
 
 <section class="bg-surface-container-low/90 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-space-md">
 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
-<div class="p-3 rounded-lg bg-surface-container border border-tertiary/20 text-tertiary">
-<span class="material-symbols-outlined text-3xl">podium</span>
+<div class="p-3 rounded-lg bg-surface-container border border-secondary/30 text-secondary">
+<span class="material-symbols-outlined text-3xl">sensors</span>
 </div>
 <div>
 <div class="flex items-center gap-2 flex-wrap">
-<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-tertiary-container text-tertiary border border-tertiary/40">Odd Sem 2024-25</span>
-<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant">Department of Computer Science &amp; Engineering</span>
-<span class="text-label-sm font-label-sm text-secondary font-medium flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Live Synchronized
-              </span>
+<span class="px-2.5 py-0.5 rounded text-label-sm font-label-sm bg-secondary/15 text-secondary border border-secondary/40 font-mono font-bold flex items-center gap-1.5">
+  <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+  19.25 kHz Ultrasound Active
+</span>
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-on-surface-variant border border-outline-variant">Dept of Computer Science &amp; Engineering</span>
 </div>
 <h1 class="text-headline-md font-headline-md text-on-surface mt-1 font-bold">
-              CSE 5th Sem - CS501: Machine Learning • Room 304
-            </h1>
+  CSE 5th Sem - CS501: Machine Learning • Room 304
+</h1>
 <p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
-              Scheduled slot: <strong class="text-on-surface font-semibold">10:30 AM - 11:30 AM</strong> (28 mins elapsed) • Beacon Transmitter: Lectern Podium 01
-            </p>
+  Classroom attendance beacon broadcasting via laptop speakers • Students listen on mobile to check in.
+</p>
 </div>
 </div>
 
 <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
   <div class="relative flex items-center">
-    <span class="material-symbols-outlined absolute left-2.5 text-tertiary text-base pointer-events-none">menu_book</span>
-    <select id="active-course-select" onchange="onClassroomCourseChanged(this.value)" class="pl-8 pr-8 py-1.5 rounded-lg bg-surface-container border border-outline-variant text-xs font-semibold text-on-surface focus:outline-none focus:border-tertiary appearance-none cursor-pointer">
+    <span class="material-symbols-outlined absolute left-2.5 text-secondary text-base pointer-events-none">menu_book</span>
+    <select id="active-course-select" onchange="onClassroomCourseChanged(this.value)" class="pl-8 pr-8 py-2 rounded-lg bg-surface-container border border-outline-variant text-xs font-semibold text-on-surface focus:outline-none focus:border-secondary appearance-none cursor-pointer">
       <option value="CS501" selected>CS501: Machine Learning (Room 304)</option>
       <option value="CS502">CS502: Computer Networks (Room 208)</option>
       <option value="CS503">CS503: Database Management Systems (Room 304)</option>
@@ -247,78 +243,54 @@
 
 <section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
 
-<div class="lg:col-span-7 bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-lg border border-tertiary/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
+<!-- Left: Ultrasound Acoustic Beacon -->
+<div class="lg:col-span-7 bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-lg border border-secondary/30 shadow-lg relative overflow-hidden flex flex-col justify-between">
 
-<div class="absolute -top-16 -right-16 w-64 h-64 bg-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
 <div>
-
 <div class="flex justify-between items-start mb-space-md">
 <div>
 <div class="flex items-center gap-2">
 <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping"></span>
-<span class="text-label-sm font-label-sm text-secondary font-bold uppercase tracking-wider">High-Frequency Acoustic Beacon</span>
+<span class="text-label-sm font-label-sm text-secondary font-bold uppercase tracking-wider">Acoustic Beacon</span>
 </div>
 <h2 class="text-headline-sm font-headline-sm text-on-surface mt-1 font-bold">
-                  Broadcasting Inaudible Acoustic Token
-                </h2>
+  Ultrasound Speaker Transmitter
+</h2>
 <p class="text-body-sm font-body-sm text-on-surface-variant">
-                  17.5 kHz – 19.8 kHz Multi-Frequency FSK (Frequency Shift Keying)
-                </p>
+  Inaudible 19,250 Hz sound wave carrying the attendance token across Room 304.
+</p>
 </div>
 <div class="px-3 py-1 rounded-lg bg-surface-container border border-secondary/40 text-secondary text-label-md font-label-md flex items-center gap-1.5">
 <span class="material-symbols-outlined text-base text-secondary">graphic_eq</span>
-<span>TX Gain: +24 dB SNR</span>
+<span id="fsk-carrier-status">Carrier: 19,250 Hz Active</span>
 </div>
 </div>
 
 <div class="bg-surface-container-lowest/90 rounded-xl p-space-md border border-outline-variant/60 my-space-md">
-<!-- STRICT INAUDIBLE ULTRASONIC CHANNEL -->
-<div class="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-lg bg-surface-container/80 border border-secondary/30 mb-3 shadow-sm">
-  <div class="flex items-center gap-2">
-    <span class="relative flex h-2.5 w-2.5">
-      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
-    </span>
-    <span class="text-xs font-bold text-on-surface font-mono uppercase tracking-wide">Acoustic Mode:</span>
-    <span class="px-2.5 py-1 rounded bg-secondary/15 text-secondary font-mono text-xs font-bold border border-secondary/40 flex items-center gap-1.5 shadow-sm">
-      <span class="material-symbols-outlined text-sm">lock</span>
-      Pure Inaudible Ultrasonic (19,250 Hz FSK)
-    </span>
-  </div>
-  <div class="flex items-center gap-2 text-xs font-mono text-on-surface-variant">
-    <span class="material-symbols-outlined text-sm text-tertiary">hearing_disabled</span>
-    <span>Zero Human Audio Disturbance • Silent Ultrasound Handshake</span>
-  </div>
-</div>
 
 <div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mb-2">
 <span class="flex items-center gap-1.5 font-mono">
 <span id="fsk-led" class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-<span class="text-on-surface font-bold">REAL-TIME FFT SPECTRAL DENSITY</span>
+<span class="text-on-surface font-bold">LIVE FFT FREQUENCY SPECTRUM</span>
 </span>
-<span id="fsk-mode-badge" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary font-mono text-[11px] border border-secondary/30 font-bold">🤫 Inaudible Ultrasonic (19,250 Hz)</span>
+<span id="fsk-mode-badge" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary font-mono text-[11px] border border-secondary/30 font-bold">Inaudible Ultrasound (19,250 Hz)</span>
 </div>
 
 <div class="relative w-full rounded-xl overflow-hidden border border-secondary/30 bg-gradient-to-b from-surface-container-low/95 to-surface-container-lowest/95 p-4 flex flex-col gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
   
-  <div class="absolute inset-0 bg-radial from-secondary/10 via-transparent to-transparent pointer-events-none"></div>
-
   <div class="flex items-center justify-between text-xs font-mono relative z-10">
     <div class="flex items-center gap-2">
       <span class="relative flex h-2 w-2">
         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
         <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
       </span>
-      <span id="fsk-carrier-status" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary text-[11px] font-bold border border-secondary/40 shadow-sm">
-        Carrier: 19,250 Hz (Inaudible FSK Beacon)
+      <span class="text-secondary font-bold">
+        Audio Frequency: 18.5 kHz - 19.8 kHz
       </span>
     </div>
     <div class="flex items-center gap-2">
-      <span id="fsk-snr-reading" class="px-2.5 py-0.5 rounded bg-surface-container text-tertiary text-[11px] font-bold border border-tertiary/40 shadow-sm">
+      <span id="fsk-snr-reading" class="px-2.5 py-0.5 rounded bg-surface-container text-secondary text-[11px] font-bold border border-secondary/40 shadow-sm">
         SNR: +26 dB (Optimum Acoustic Channel)
-      </span>
-      <span class="px-2 py-0.5 rounded bg-purple-900/50 text-purple-300 text-[10px] border border-purple-500/30 font-bold uppercase">
-        TX Gain 100%
       </span>
     </div>
   </div>
@@ -331,23 +303,23 @@
   <div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono relative z-10 pt-1 border-t border-outline-variant/20">
     <span class="flex items-center gap-1.5 text-secondary">
       <span class="material-symbols-outlined text-[15px]">sensors</span>
-      <span>Acoustic Frequency: 18.5 kHz – 19.8 kHz Active Pulse</span>
+      <span>Classroom Presence Lock • High-Frequency Channel</span>
     </span>
-    <span class="text-tertiary font-bold">Room 304 Transmit Safe</span>
+    <span id="fsk-pilot-footer" class="text-secondary font-bold">Pilot Wave: 19.250 kHz</span>
   </div>
 </div>
 
 <div class="flex items-end justify-between gap-1.5 px-2 pt-2 border-b border-outline-variant/40 pb-2 h-14">
   <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-    <div id="meter-175" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-2 transition-all duration-75"></div>
+    <div id="meter-175" class="w-full bg-gradient-to-t from-emerald-950 to-secondary rounded-t h-2 transition-all duration-75"></div>
     <span class="text-[9px] font-mono text-outline">17.5k</span>
   </div>
   <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-    <div id="meter-178" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-2 transition-all duration-75"></div>
+    <div id="meter-178" class="w-full bg-gradient-to-t from-emerald-950 to-secondary rounded-t h-2 transition-all duration-75"></div>
     <span class="text-[9px] font-mono text-outline">17.8k</span>
   </div>
   <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-    <div id="meter-180" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-3 transition-all duration-75"></div>
+    <div id="meter-180" class="w-full bg-gradient-to-t from-emerald-950 to-secondary rounded-t h-3 transition-all duration-75"></div>
     <span class="text-[9px] font-mono text-outline">18.0k</span>
   </div>
   <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
@@ -367,16 +339,11 @@
     <span class="text-[9px] font-mono text-outline">19.5k</span>
   </div>
   <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-    <div id="meter-198" class="w-full bg-gradient-to-t from-tertiary-container to-secondary rounded-t h-4 transition-all duration-75"></div>
+    <div id="meter-198" class="w-full bg-gradient-to-t from-emerald-950 to-secondary rounded-t h-4 transition-all duration-75"></div>
     <span class="text-[9px] font-mono text-outline">19.8k</span>
   </div>
 </div>
 
-<div class="flex items-center justify-between text-[11px] text-on-surface-variant font-mono mt-2 pt-1">
-<span>Modulation: Continuous Multi-Tone FSK</span>
-<span id="fsk-pilot-footer" class="text-secondary font-bold">Pilot Wave: Synced (19.250 kHz)</span>
-<span>Coverage: Classroom 304</span>
-</div>
 </div>
 </div>
 
@@ -387,14 +354,13 @@
 <span id="btn-pause-text">Pause Broadcast</span>
 </button>
 <button id="btn-toggle-mic" onclick="toggleMicListener()" class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer">
-<span class="material-symbols-outlined text-base text-tertiary">mic</span>
+<span class="material-symbols-outlined text-base text-secondary">mic</span>
 <span id="btn-mic-text">Listen to Room Mic</span>
 </button>
 <button id="btn-reset-roster" onclick="resetRosterSession()" class="px-3.5 py-2 rounded-lg bg-error-container/20 hover:bg-error-container/40 border border-error/30 text-error text-label-md font-label-md flex items-center gap-1.5 transition-colors cursor-pointer" title="Clear present records for new session">
 <span class="material-symbols-outlined text-base">delete_sweep</span>
 <span>Clear Roster</span>
 </button>
-
 </div>
 
 <div class="relative flex items-center">
@@ -407,67 +373,67 @@
 </div>
 </div>
 
+<!-- Right: Dynamic Rotating Acoustic Token -->
 <div class="lg:col-span-5 bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-lg border border-outline-variant/60 shadow-lg flex flex-col justify-between relative overflow-hidden">
 <div>
 
 <div class="flex justify-between items-center mb-space-sm">
 <div class="flex items-center gap-2">
-<span class="p-1 rounded bg-tertiary-container text-tertiary">
-<span class="material-symbols-outlined text-sm">lock_clock</span>
+<span class="p-1 rounded bg-secondary-container/40 text-secondary">
+<span class="material-symbols-outlined text-sm">autorenew</span>
 </span>
-<span class="text-label-sm font-label-sm text-tertiary font-bold uppercase tracking-wider">Zero-Replay Security</span>
+<span class="text-label-sm font-label-sm text-secondary font-bold uppercase tracking-wider">Acoustic Token</span>
 </div>
-<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant/40">
-                Window 15s
-              </span>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant/40 font-mono">
+  Auto-Rotates: 15s
+</span>
 </div>
+
 <h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">
-              Dynamic Ultrasonic Cryptographic Token
-            </h3>
+  Live Rotating Token
+</h3>
 <p class="text-body-sm font-body-sm text-on-surface-variant">
-              Rotating payload encoded within the acoustic beacon to prevent relay &amp; proxy attacks.
-            </p>
+  Transmitted in the ultrasound beacon. Student phones capture this token via mic to confirm classroom presence.
+</p>
 
 <div class="my-6 flex items-center justify-around bg-surface-container-lowest/80 rounded-xl p-space-md border border-outline-variant/40">
 
 <div class="flex flex-col">
-<span class="text-label-sm font-label-sm text-on-surface-variant tracking-wider uppercase font-mono">CURRENT PAYLOAD TOKEN</span>
-<div id="lec-token-display" class="text-4xl font-extrabold font-mono tracking-widest text-tertiary drop-shadow-[0_0_12px_rgba(76,215,246,0.6)] my-1">
-  #A5F2
+<span class="text-label-sm font-label-sm text-on-surface-variant tracking-wider uppercase font-mono">CURRENT ACOUSTIC TOKEN</span>
+<div id="lec-token-display" class="text-4xl font-extrabold font-mono tracking-widest text-secondary drop-shadow-[0_0_12px_rgba(78,222,163,0.6)] my-1">
+  #----
 </div>
-<div class="flex items-center gap-1.5 text-secondary text-label-sm font-label-sm font-mono">
-<span class="material-symbols-outlined text-sm">verified_user</span>
-<span>AES-GCM Authenticated</span>
+<div class="flex items-center gap-1.5 text-on-surface-variant text-label-sm font-label-sm font-mono">
+<span class="material-symbols-outlined text-sm text-secondary">graphic_eq</span>
+<span>Ultrasonic Audio Token</span>
 </div>
 </div>
 
 <div class="relative w-24 h-24 flex items-center justify-center">
 <svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
-
 <circle class="text-surface-container" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
-
-<circle id="lec-timer-circle" class="text-tertiary transition-all duration-1000" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="264" stroke-dashoffset="71" stroke-linecap="round" stroke-width="8"></circle>
+<circle id="lec-timer-circle" class="text-secondary transition-all duration-1000" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
 </svg>
 <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-<span id="lec-timer-display" class="text-base font-bold font-mono text-on-surface leading-none">11s</span>
+<span id="lec-timer-display" class="text-base font-bold font-mono text-on-surface leading-none">15s</span>
 <span class="text-[9px] text-outline font-mono">/ 15s</span>
 </div>
 </div>
 </div>
 
 <div class="grid grid-cols-2 gap-2 text-body-sm font-body-sm">
-<div class="p-2 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+<div class="p-2.5 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base">lock_clock</span>
 <div class="flex flex-col">
-<span class="text-[10px] text-outline uppercase font-mono">Salt Variant</span>
-<span class="text-xs font-semibold text-on-surface">sha256_v4</span>
+<span class="text-[10px] text-outline uppercase font-mono">Anti-Proxy Protection</span>
+<span class="text-xs font-semibold text-on-surface">Auto-Rotates 15s</span>
 </div>
 </div>
-<div class="p-2 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary text-sm">phonelink_lock</span>
+<div class="p-2.5 rounded bg-surface-container/60 border border-outline-variant/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-base">hearing</span>
 <div class="flex flex-col">
-<span class="text-[10px] text-outline uppercase font-mono">Hardware Link</span>
-<span class="text-xs font-semibold text-on-surface">Device Bound</span>
+<span class="text-[10px] text-outline uppercase font-mono">Human Audibility</span>
+<span class="text-xs font-semibold text-on-surface">Silent / Inaudible</span>
 </div>
 </div>
 </div>
@@ -475,21 +441,22 @@
 
 <div class="mt-space-md pt-3 border-t border-outline-variant/40 flex items-center justify-between text-label-sm font-label-sm">
 <span class="text-on-surface-variant flex items-center gap-1 font-mono">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Zero Replay Security Active
-            </span>
-<button onclick="openEmergencyQRModal()" class="text-tertiary hover:underline font-semibold flex items-center gap-0.5 cursor-pointer">
-<span>View Key Registry</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Ultrasound Broadcast Live
+</span>
+<button onclick="openEmergencyQRModal()" class="text-secondary hover:underline font-semibold flex items-center gap-0.5 cursor-pointer">
+<span>Show Fallback QR</span>
 <span class="material-symbols-outlined text-xs">chevron_right</span>
 </button>
 </div>
 </div>
 </section>
 
+<!-- Stats Cards -->
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
 
 <div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
 <div class="flex justify-between items-start">
-<span class="text-label-md font-label-md text-on-surface-variant">Total Enrolled</span>
+<span class="text-label-md font-label-md text-on-surface-variant font-medium">Total Enrolled</span>
 <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
 <span class="material-symbols-outlined text-lg">school</span>
 </div>
@@ -499,7 +466,7 @@
 <p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">CSE Batch 2024 • Section A</p>
 </div>
 <div class="text-label-sm font-label-sm text-outline flex items-center gap-1 border-t border-outline-variant/40 pt-2 font-mono">
-<span>Quota Registered: 100%</span>
+<span>Active Classroom Roster</span>
 </div>
 </div>
 
@@ -515,7 +482,7 @@
 <div id="stat-present-count" class="text-headline-lg font-headline-lg text-secondary font-extrabold tracking-tight">0</div>
 <span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary/20 text-secondary font-bold flex items-center gap-1">
 <span class="material-symbols-outlined text-xs">trending_up</span> Live Sync
-            </span>
+</span>
 </div>
 <div class="text-label-sm font-label-sm text-secondary flex items-center justify-between border-t border-outline-variant/40 pt-2 font-mono">
 <span id="stat-quorum-pct">Quorum: 0.0%</span>
@@ -525,7 +492,7 @@
 
 <div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
 <div class="flex justify-between items-start">
-<span class="text-label-md font-label-md text-on-surface-variant">Absent / Unmarked</span>
+<span class="text-label-md font-label-md text-on-surface-variant font-medium">Absent / Pending</span>
 <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-error">
 <span class="material-symbols-outlined text-lg">person_off</span>
 </div>
@@ -543,19 +510,20 @@
 </div>
 </div>
 
+<!-- REAL 4TH CARD: Ultrasound Acoustic Carrier -->
 <div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md border border-outline-variant/60 shadow-sm flex flex-col justify-between">
 <div class="flex justify-between items-start">
-<span class="text-label-md font-label-md text-tertiary font-semibold">Verification Integrity</span>
-<div class="w-8 h-8 rounded-lg bg-tertiary-container flex items-center justify-center text-tertiary">
-<span class="material-symbols-outlined text-lg">verified</span>
+<span class="text-label-md font-label-md text-secondary font-semibold">Sound Frequency</span>
+<div class="w-8 h-8 rounded-lg bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-lg">sensors</span>
 </div>
 </div>
 <div class="my-2">
-<div class="text-headline-lg font-headline-lg text-tertiary font-extrabold tracking-tight">98.2%</div>
-<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">0 Spoofed Packets Detected</p>
+<div class="text-headline-lg font-headline-lg text-secondary font-extrabold tracking-tight">19.25 kHz</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Physical Room Proximity Lock</p>
 </div>
 <div class="text-label-sm font-label-sm text-outline flex items-center gap-1 border-t border-outline-variant/40 pt-2 font-mono">
-<span>Hardware Bound: 100%</span>
+<span>Inaudible Ultrasound Beacon</span>
 </div>
 </div>
 </section>
@@ -602,16 +570,15 @@
 <th class="py-3 px-4 w-12 text-center">#</th>
 <th class="py-3 px-4">Student Details</th>
 <th class="py-3 px-4">Time Marked</th>
-<th class="py-3 px-4">Device Binding Status</th>
-<th class="py-3 px-4">Acoustic Signal Quality</th>
+<th class="py-3 px-4 text-center">Acoustic Token</th>
+<th class="py-3 px-4">Verification Channel</th>
 <th class="py-3 px-4 text-center">Status</th>
-<th class="py-3 px-4 text-right">Actions</th>
 </tr>
 </thead>
 
 <tbody id="roster-tbody" class="divide-y divide-outline-variant/30">
 <tr>
-<td colspan="7" class="py-12 text-center text-on-surface-variant font-mono">
+<td colspan="6" class="py-12 text-center text-on-surface-variant font-mono">
   <div class="flex flex-col items-center justify-center gap-2">
     <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">hearing</span>
     <span class="text-sm font-semibold text-on-surface">Live Acoustic Roster Active (19.25 kHz)</span>
@@ -641,31 +608,27 @@
 <footer class="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-low/95 backdrop-blur-xl border-t border-outline-variant/60 px-4 sm:px-6 lg:px-8 py-2.5 shadow-[0_-8px_30px_rgba(0,0,0,0.65)]">
   <div class="flex flex-col sm:flex-row justify-between items-center gap-2.5 max-w-full mx-auto w-full">
     
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container border border-outline-variant/50 text-xs">
-        <span class="material-symbols-outlined text-secondary text-sm">verified</span>
-        <span class="text-on-surface font-semibold">Verified Portal Format Compliant</span>
-      </div>
-      <span class="hidden md:inline text-xs text-on-surface-variant font-mono">
-        Cryptographic Hash: <code class="text-tertiary">#0x882A...FD01</code>
-      </span>
+    <div class="flex items-center gap-2 text-xs font-mono text-on-surface-variant">
+      <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+      <span class="text-on-surface font-semibold">SonicAttend Acoustic Protocol</span>
+      <span class="hidden sm:inline text-outline">• Inaudible 19.25 kHz Ultrasound Broadcast</span>
     </div>
     
     <div class="flex flex-wrap items-center gap-2 justify-end">
       
       <button onclick="openEmergencyQRModal()" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-outline-variant text-on-surface text-xs font-medium flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer">
-        <span class="material-symbols-outlined text-sm text-tertiary">qr_code_2</span>
+        <span class="material-symbols-outlined text-sm text-secondary">qr_code_2</span>
         <span>Fallback QR</span>
       </button>
       
       <button onclick="window.location.href='/api/export/vtu-report'" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-bright border border-outline-variant text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer">
-        <span class="material-symbols-outlined text-sm text-primary">table_view</span>
+        <span class="material-symbols-outlined text-sm text-secondary">download</span>
         <span>Export CSV</span>
       </button>
       
-      <button onclick="window.open('/api/export/vtu-sheet', '_blank')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright border border-tertiary/40 text-tertiary text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer" title="Open official VTU print-ready attendance sheet">
+      <button onclick="window.open('/api/export/vtu-sheet', '_blank')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright border border-secondary/40 text-secondary text-xs font-semibold flex items-center gap-1.5 transition-colors active:scale-95 cursor-pointer" title="Open official VTU print-ready attendance sheet">
         <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
-        <span>Official VTU Sheet</span>
+        <span>Print Sheet</span>
       </button>
       
       <button onclick="finalizeSession()" class="px-4 py-1.5 rounded-lg bg-secondary text-on-secondary hover:bg-secondary-fixed text-xs font-bold flex items-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer">
@@ -1354,23 +1317,20 @@
                       <span>${r.timestamp.split(' ')[1] || r.timestamp}</span>
                     </div>
                   </td>
+                  <td class="py-3.5 px-4 text-center">
+                    <span class="font-mono text-xs font-bold text-secondary bg-surface-container px-2.5 py-1 rounded border border-secondary/30">#${r.acoustic_token}</span>
+                  </td>
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-1.5 text-xs text-on-surface font-mono">
-                      <span class="material-symbols-outlined text-xs text-secondary">phonelink_lock</span>
-                      <span>${r.device_id || 'DEV-82A1'}</span>
+                      <span class="material-symbols-outlined text-xs text-secondary">sensors</span>
+                      <span>Ultrasound (19.25 kHz)</span>
                     </div>
-                  </td>
-                  <td class="py-3.5 px-4 text-center">
-                    <span class="font-mono text-xs font-bold text-tertiary">#${r.acoustic_token}</span>
                   </td>
                   <td class="py-3.5 px-4 text-center">
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-label-sm ${isPresent ? 'bg-secondary-container/40 text-secondary border border-secondary/30' : 'bg-error-container/40 text-error border border-error/30'} font-bold">
                       <span class="w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-secondary' : 'bg-error'}"></span>
-                      ${isPresent ? 'Present - Ultrasonic' : 'Rejected'}
+                      ${isPresent ? 'Present ✓' : 'Rejected'}
                     </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <span class="material-symbols-outlined text-secondary text-sm">verified</span>
                   </td>
                 </tr>
               `;
@@ -1378,7 +1338,7 @@
           } else {
             tbody.innerHTML = `
               <tr>
-                <td colspan="7" class="py-12 text-center text-on-surface-variant font-mono">
+                <td colspan="6" class="py-12 text-center text-on-surface-variant font-mono">
                   <div class="flex flex-col items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">hearing</span>
                     <span class="text-sm font-semibold text-on-surface">Live Acoustic Roster Active (19.25 kHz)</span>
@@ -1526,23 +1486,20 @@
                 <span>${r.timestamp.split(' ')[1] || r.timestamp}</span>
               </div>
             </td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="font-mono text-xs font-bold text-secondary bg-surface-container px-2.5 py-1 rounded border border-secondary/30">#${r.acoustic_token}</span>
+            </td>
             <td class="py-3.5 px-4">
               <div class="flex items-center gap-1.5 text-xs text-on-surface font-mono">
-                <span class="material-symbols-outlined text-xs text-secondary">phonelink_lock</span>
-                <span>${r.device_id || 'DEV-82A1'}</span>
+                <span class="material-symbols-outlined text-xs text-secondary">sensors</span>
+                <span>Ultrasound (19.25 kHz)</span>
               </div>
-            </td>
-            <td class="py-3.5 px-4 text-center">
-              <span class="font-mono text-xs font-bold text-tertiary">#${r.acoustic_token}</span>
             </td>
             <td class="py-3.5 px-4 text-center">
               <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-label-sm font-label-sm ${isPresent ? 'bg-secondary-container/40 text-secondary border border-secondary/30' : 'bg-error-container/40 text-error border border-error/30'} font-bold">
                 <span class="w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-secondary' : 'bg-error'}"></span>
-                ${isPresent ? 'Present - Ultrasonic' : 'Rejected'}
+                ${isPresent ? 'Present ✓' : 'Rejected'}
               </span>
-            </td>
-            <td class="py-3.5 px-4 text-right">
-              <span class="material-symbols-outlined text-secondary text-sm">verified</span>
             </td>
           </tr>
         `;
@@ -1550,7 +1507,7 @@
     } else {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" class="py-8 text-center text-on-surface-variant font-mono">
+          <td colspan="6" class="py-8 text-center text-on-surface-variant font-mono">
             ${currentRosterRecords.length === 0 ? 'No attendance records yet for this session.' : 'No matching students found for "' + query + '".'}
           </td>
         </tr>
