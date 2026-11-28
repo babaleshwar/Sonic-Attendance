@@ -343,6 +343,14 @@
       if (isListening) return;
 
       const msgBox = document.getElementById('detection-msg-box');
+      if (!isClassActive) {
+        showToast('Lecturer broadcast is currently stopped. Please wait for lecturer to start broadcast.', 'error', 'Broadcast Standby');
+        if (msgBox) {
+          msgBox.className = 'p-3 rounded-lg bg-amber-950/80 border border-amber-500/50 text-xs font-mono text-center text-amber-200';
+          msgBox.innerHTML = '⏳ <strong>Broadcast Standby:</strong> Lecturer has stopped broadcast. Waiting for lecture broadcast...';
+        }
+        return;
+      }
       const btnLabel = document.getElementById('btn-sync-label');
       const btnIcon = document.getElementById('btn-sync-icon');
       const syncBtn = document.getElementById('attendanceBtn');
@@ -540,6 +548,10 @@
 
     // Direct 1-Click Check-in function
     async function performDirectCheckin() {
+      if (!isClassActive) {
+        showToast('Lecturer broadcast is currently stopped. Attendance can only be marked during active broadcast.', 'error', 'Broadcast Standby');
+        return;
+      }
       const msgBox = document.getElementById('detection-msg-box');
       if (msgBox) {
         msgBox.className = 'p-3 rounded-lg bg-cyan-950/80 border border-cyan-400/50 text-xs font-mono text-center text-cyan-200';
@@ -550,6 +562,10 @@
 
     // Manual screen token submission (if mic disabled)
     async function submitManualToken() {
+      if (!isClassActive) {
+        showToast('Lecturer broadcast is currently stopped. Attendance can only be marked during active broadcast.', 'error', 'Broadcast Standby');
+        return;
+      }
       const input = document.getElementById('manual-token-input');
       const val = input ? input.value.trim().toUpperCase() : '';
       if (!val) {

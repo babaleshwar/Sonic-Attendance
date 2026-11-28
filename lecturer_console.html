@@ -211,7 +211,7 @@
 </div>
 <div>
 <div class="flex items-center gap-2 flex-wrap">
-<span class="px-2.5 py-0.5 rounded text-label-sm font-label-sm bg-secondary/15 text-secondary border border-secondary/40 font-mono font-bold flex items-center gap-1.5">
+<span id="header-beacon-chip" class="px-2.5 py-0.5 rounded text-label-sm font-label-sm bg-secondary/15 text-secondary border border-secondary/40 font-mono font-bold flex items-center gap-1.5">
   <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
   19.25 kHz Ultrasound Active
 </span>
@@ -824,12 +824,6 @@
     }
     isBroadcasting = false;
     updateBroadcastUI(false);
-    const carrierEl = document.getElementById('fsk-carrier-status');
-    if (carrierEl) carrierEl.textContent = 'Carrier: Standby / Muted (0 Hz)';
-    const snrEl = document.getElementById('fsk-snr-reading');
-    if (snrEl) snrEl.textContent = 'SNR: 0 dB (Silence)';
-    const pilotFooter = document.getElementById('fsk-pilot-footer');
-    if (pilotFooter) pilotFooter.textContent = 'Pilot Wave: Disconnected';
   }
 
   function updateBroadcastUI(active) {
@@ -838,6 +832,15 @@
     const pillText = document.getElementById('pill-broadcast-text');
     const led = document.getElementById('fsk-led');
     const glow = document.getElementById('broadcast-glow');
+    const tokenDisplay = document.getElementById('lec-token-display');
+    const timerDisplay = document.getElementById('lec-timer-display');
+    const circle = document.getElementById('lec-timer-circle');
+    const navChip = document.getElementById('nav-beacon-chip');
+    const headerChip = document.getElementById('header-beacon-chip');
+    const carrierEl = document.getElementById('fsk-carrier-status');
+    const modeBadge = document.getElementById('fsk-mode-badge');
+    const snrEl = document.getElementById('fsk-snr-reading');
+    const pilotFooter = document.getElementById('fsk-pilot-footer');
 
     if (active) {
       if (btnTop) {
@@ -848,23 +851,48 @@
       if (pillText) pillText.textContent = 'Broadcasting Active';
       if (led) led.className = 'w-2 h-2 rounded-full bg-secondary animate-pulse';
       if (glow) glow.className = 'absolute -inset-1 rounded-full bg-secondary/30 blur-sm animate-pulse';
+      if (carrierEl) carrierEl.textContent = 'Carrier: 19,250 Hz (Inaudible Ultrasonic Active)';
+      if (modeBadge) modeBadge.textContent = 'Inaudible Ultrasonic (19,250 Hz)';
+      if (navChip) {
+        navChip.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-full border border-secondary/30 shadow-inner';
+        navChip.innerHTML = '<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="text-[11px] font-mono text-secondary font-bold tracking-wider">19.25 kHz ACTIVE</span>';
+      }
+      if (headerChip) {
+        headerChip.className = 'px-2.5 py-0.5 rounded text-label-sm font-label-sm bg-secondary/15 text-secondary border border-secondary/40 font-mono font-bold flex items-center gap-1.5';
+        headerChip.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>19.25 kHz Ultrasound Active';
+      }
     } else {
       if (btnTop) {
         btnTop.textContent = 'Start Broadcast';
         btnTop.className = 'inline-flex items-center px-3.5 py-1.5 rounded-lg bg-emerald-700 text-white hover:bg-emerald-600 text-label-md font-label-md transition-colors active:scale-[0.98] font-bold cursor-pointer';
       }
       if (btnPauseText) btnPauseText.textContent = 'Resume Broadcast';
-      if (pillText) pillText.textContent = 'Broadcast Paused';
+      if (pillText) pillText.textContent = 'Broadcast Stopped';
       if (led) led.className = 'w-2 h-2 rounded-full bg-outline';
       if (glow) glow.className = 'hidden';
+      if (carrierEl) carrierEl.textContent = 'Carrier: Standby / Muted (0 Hz)';
+      if (modeBadge) modeBadge.textContent = 'Standby (Muted)';
+      if (snrEl) snrEl.textContent = 'SNR: 0 dB (Silence)';
+      if (pilotFooter) pilotFooter.textContent = 'Pilot Wave: Disconnected';
+      if (tokenDisplay) tokenDisplay.textContent = '#STANDBY';
+      if (timerDisplay) timerDisplay.textContent = '--';
+      if (circle) circle.style.strokeDashoffset = 264;
+      if (navChip) {
+        navChip.className = 'hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-surface-container rounded-full border border-outline-variant/30';
+        navChip.innerHTML = '<span class="w-2 h-2 rounded-full bg-outline"></span><span class="text-[11px] font-mono text-outline font-bold tracking-wider">BEACON MUTED</span>';
+      }
+      if (headerChip) {
+        headerChip.className = 'px-2.5 py-0.5 rounded text-label-sm font-label-sm bg-surface-container text-outline border border-outline-variant/30 font-mono font-bold flex items-center gap-1.5';
+        headerChip.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>Broadcast Stopped (Standby)';
+      }
     }
   }
 
   async function toggleBroadcast() {
     initAudioEngine();
     if (isBroadcasting) {
-      try { await fetch('/api/session/stop', { method: 'POST' }); } catch(e) {}
       stopUltrasonicBroadcast();
+      try { await fetch('/api/session/stop', { method: 'POST' }); } catch(e) {}
     } else {
       try {
         await fetch('/api/session/start', {
@@ -1253,26 +1281,37 @@
 
     // backend sync
     async function syncSession() {
-    try {
-      const res = await fetch('/api/session/active?role=faculty');
-      const data = await res.json();
-      if (data.is_active && data.session) {
+      try {
+        const res = await fetch('/api/session/active?role=faculty');
+        const data = await res.json();
         const tokenDisplay = document.getElementById('lec-token-display');
         const timerDisplay = document.getElementById('lec-timer-display');
         const circle = document.getElementById('lec-timer-circle');
 
-        if (tokenDisplay) tokenDisplay.textContent = `#${data.session.current_token}`;
-        if (timerDisplay) timerDisplay.textContent = `${data.session.seconds_left}s`;
-        if (circle) {
-          const pct = data.session.seconds_left / 15;
-          circle.style.strokeDashoffset = Math.round(264 * (1 - pct));
+        if (data.is_active && isBroadcasting && data.session) {
+          if (tokenDisplay && data.session.current_token) {
+            tokenDisplay.textContent = `#${data.session.current_token}`;
+          }
+          if (timerDisplay) {
+            timerDisplay.textContent = `${data.session.seconds_left}s`;
+          }
+          if (circle) {
+            const pct = data.session.seconds_left / 15;
+            circle.style.strokeDashoffset = Math.round(264 * (1 - pct));
+          }
+          if (isQRModalOpen) {
+            updateQRModalPayload(data.session);
+          }
+        } else {
+          if (tokenDisplay) tokenDisplay.textContent = '#STANDBY';
+          if (timerDisplay) timerDisplay.textContent = '--';
+          if (circle) circle.style.strokeDashoffset = 264;
+          if (!data.is_active && isBroadcasting) {
+            stopUltrasonicBroadcast();
+          }
         }
-        if (isQRModalOpen) {
-          updateQRModalPayload(data.session);
-        }
-      }
-    } catch (e) {}
-  }
+      } catch (e) {}
+    }
 
   async function syncRoster() {
     try {

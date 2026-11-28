@@ -691,7 +691,8 @@ def session_start():
     # Deactivate existing sessions
     cursor.execute("UPDATE class_sessions SET is_active = 0 WHERE is_active = 1")
 
-    session_id = f"SES-{datetime.now().strftime('%Y%m%d%H%M%S')}-{subject_code}"
+    rand_suffix = hashlib.md5(f"{time.time()}_{random.random()}".encode()).hexdigest()[:4].upper()
+    session_id = f"SES-{datetime.now().strftime('%Y%m%d%H%M%S')}-{subject_code}-{rand_suffix}"
     secret_seed = f"SONIC-{session_id}-{int(time.time())}"
 
     cursor.execute("""
@@ -736,26 +737,6 @@ def session_active():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM class_sessions WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1")
     session = cursor.fetchone()
-
-    # Testing auto-provision: ensure session exists so student portal never gets blocked
-    if not session:
-        cursor.execute("SELECT * FROM class_sessions ORDER BY created_at DESC LIMIT 1")
-        recent = cursor.fetchone()
-        if recent:
-            cursor.execute("UPDATE class_sessions SET is_active = 1 WHERE session_id = ?", (recent["session_id"],))
-            conn.commit()
-            cursor.execute("SELECT * FROM class_sessions WHERE session_id = ?", (recent["session_id"],))
-            session = cursor.fetchone()
-        else:
-            new_id = "SES-" + hashlib.md5(f"{time.time()}".encode()).hexdigest()[:6].upper()
-            cursor.execute("""
-            INSERT INTO class_sessions (session_id, faculty_id, subject_code, subject_name, room_no, is_active, frequency_khz, secret_seed)
-            VALUES (?, 'VSM-CSE-FAC01', 'CS501', 'Machine Learning', 'Room 304', 1, 19.25, 'SONIC_ATTEND_SEED_2026')
-            """, (new_id,))
-            conn.commit()
-            cursor.execute("SELECT * FROM class_sessions WHERE session_id = ?", (new_id,))
-            session = cursor.fetchone()
-
     conn.close()
 
     if not session:
@@ -820,22 +801,11 @@ def attendance_mark():
     cursor.execute("SELECT * FROM class_sessions WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1")
     session = cursor.fetchone()
     if not session:
-        cursor.execute("SELECT * FROM class_sessions ORDER BY created_at DESC LIMIT 1")
-        recent = cursor.fetchone()
-        if recent:
-            cursor.execute("UPDATE class_sessions SET is_active = 1 WHERE session_id = ?", (recent["session_id"],))
-            conn.commit()
-            cursor.execute("SELECT * FROM class_sessions WHERE session_id = ?", (recent["session_id"],))
-            session = cursor.fetchone()
-        else:
-            new_id = "SES-" + hashlib.md5(f"{time.time()}".encode()).hexdigest()[:6].upper()
-            cursor.execute("""
-            INSERT INTO class_sessions (session_id, faculty_id, subject_code, subject_name, room_no, is_active, frequency_khz, secret_seed)
-            VALUES (?, 'VSM-CSE-FAC01', 'CS501', 'Machine Learning', 'Room 304', 1, 19.25, 'SONIC_ATTEND_SEED_2026')
-            """, (new_id,))
-            conn.commit()
-            cursor.execute("SELECT * FROM class_sessions WHERE session_id = ?", (new_id,))
-            session = cursor.fetchone()
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "NO ACTIVE LECTURE: Lecturer has stopped or not started broadcast yet. Attendance can only be marked during active broadcast."
+        }), 400
 
     session_id = session["session_id"]
     subject_code = session["subject_code"]
