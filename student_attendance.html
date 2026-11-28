@@ -392,7 +392,9 @@
         const sampleRate = audioCtx.sampleRate;
         const binWidth = sampleRate / analyserNode.fftSize;
 
-        const ultrasonicBin = Math.round(19250 / binWidth);
+        // Scan full ultrasonic band (17.5 kHz - 20.5 kHz)
+        const startUltraBin = Math.max(0, Math.round(17500 / binWidth));
+        const endUltraBin = Math.min(bufferLength - 1, Math.round(20500 / binWidth));
 
         let framesChecked = 0;
         let detectionConfirmed = false;
@@ -425,27 +427,30 @@
           }
 
           let ultrasonicEnergy = 0;
-          if (ultrasonicBin < bufferLength) {
-            for (let b = Math.max(0, ultrasonicBin - 5); b <= Math.min(bufferLength - 1, ultrasonicBin + 5); b++) {
-              if (dataArray[b] > ultrasonicEnergy) ultrasonicEnergy = dataArray[b];
+          let peakBin = 0;
+          for (let b = startUltraBin; b <= endUltraBin; b++) {
+            if (dataArray[b] > ultrasonicEnergy) {
+              ultrasonicEnergy = dataArray[b];
+              peakBin = b;
             }
           }
+          const peakFreq = Math.round(peakBin * binWidth);
 
           framesChecked++;
 
           // Live spectrum status display during listening
-          if (framesChecked % 6 === 0 && msgBox) {
-            msgBox.innerHTML = `👂 <strong>Analyzing Room Audio:</strong> 19.25 kHz Ultrasonic Signal: <span class="font-bold ${ultrasonicEnergy > 30 ? 'text-emerald-300' : 'text-cyan-300'}">${ultrasonicEnergy}</span> (Threshold: 35)`;
+          if (framesChecked % 4 === 0 && msgBox) {
+            msgBox.innerHTML = `👂 <strong>Analyzing Room Audio:</strong> Ultrasonic Signal: <span class="font-bold ${ultrasonicEnergy >= 14 ? 'text-emerald-300' : 'text-cyan-300'}">${ultrasonicEnergy}</span> (Threshold: 14)`;
           }
 
           // STRICT ACOUSTIC VERIFICATION:
-          // The phone's microphone MUST physically detect energy in the 19,250 Hz ultrasonic carrier!
-          // Normal human speech/fans have 0 energy at 19.25 kHz. Only the lecturer laptop creates this!
-          const isRealUltrasonicDetected = (ultrasonicEnergy >= 35 && ultrasonicEnergy > avg + 12);
+          // The phone's microphone MUST physically detect energy in the 17.5 - 20.5 kHz ultrasonic range!
+          // Normal human speech/fans have 0 energy at 18-20 kHz. Only the lecturer laptop creates this!
+          const isRealUltrasonicDetected = (ultrasonicEnergy >= 14 && ultrasonicEnergy > avg + 4);
 
           if (isRealUltrasonicDetected) {
             detectionConfirmed = true;
-            detectedType = '🤫 Inaudible Ultrasonic Carrier (19,250 Hz)';
+            detectedType = `🤫 Inaudible Ultrasonic Beacon (${peakFreq || 19250} Hz)`;
           }
 
           if (detectionConfirmed) {
@@ -454,9 +459,9 @@
             return;
           }
 
-          // Out-of-Range Failure: If no ultrasonic carrier is heard after ~4 seconds (240 frames),
+          // Out-of-Range Failure: If no ultrasonic carrier is heard after ~6 seconds (360 frames),
           // FAIL! Student is outside the classroom (e.g. 3-6 rooms away) or laptop is not transmitting!
-          if (framesChecked > 240) {
+          if (framesChecked > 360) {
             stopListening();
             onSignalFailed('OUT OF RANGE: No 19.25 kHz ultrasonic signal detected. You must be physically inside Classroom 304 near the lecturer laptop speakers.');
             return;

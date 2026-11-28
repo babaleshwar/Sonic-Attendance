@@ -702,8 +702,8 @@
   let isMicListening = false;
 
   // fsk frequencies
-  const FSK_FREQUENCIES = [18500, 18800, 19000, 19250, 19500, 19800];
-  let currentFskIndex = 3; // 19250 Hz primary carrier
+  const FSK_FREQUENCIES = [19250, 19250, 19500, 19250, 19250, 19000];
+  let currentFskIndex = 0; // 19250 Hz primary carrier
 
   // Faculty identity from localStorage or default (DIRECT TESTING MODE ENABLED)
   let savedFaculty = JSON.parse(localStorage.getItem('current_faculty') || 'null');
@@ -751,13 +751,13 @@
   }
 
   let currentBroadcastMode = 'ultrasonic'; // Strictly locked to Inaudible Ultrasonic (19,250 Hz)
-  let broadcastGainValue = 0.85; // High-power physical acoustic gain
+  let broadcastGainValue = 0.95; // High-power physical acoustic gain
 
   function setBroadcastMode(mode) {
     currentBroadcastMode = 'ultrasonic';
   }
 
-  function startUltrasonicBroadcast() {
+  async function startUltrasonicBroadcast() {
     initAudioEngine();
     if (!audioCtx || !analyser) return;
 
@@ -782,10 +782,26 @@
     osc.start();
     isBroadcasting = true;
 
+    // Ensure session is automatically started and active in database
+    try {
+      await fetch('/api/session/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          faculty_id: (savedFaculty && savedFaculty.faculty_id) ? savedFaculty.faculty_id : 'VSM-CSE-FAC01',
+          faculty_name: (savedFaculty && savedFaculty.name) ? savedFaculty.name : 'Faculty Instructor',
+          subject_code: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject.split(' - ')[0] : 'CS501',
+          subject_name: (savedFaculty && savedFaculty.subject) ? savedFaculty.subject : 'Machine Learning',
+          room_no: (savedFaculty && savedFaculty.room_no) ? savedFaculty.room_no : 'Classroom 304',
+          frequency_khz: 19.25
+        })
+      });
+    } catch(e) {}
+
     const carrierEl = document.getElementById('fsk-carrier-status');
     if (carrierEl) carrierEl.textContent = 'Carrier: 19,250 Hz (Inaudible Ultrasonic Active)';
     const modeBadge = document.getElementById('fsk-mode-badge');
-    if (modeBadge) modeBadge.textContent = '🤫 Inaudible Ultrasonic (19,250 Hz)';
+    if (modeBadge) modeBadge.textContent = 'Inaudible Ultrasonic (19,250 Hz)';
 
     if (fskModulatorTimer) clearInterval(fskModulatorTimer);
     fskModulatorTimer = setInterval(() => {
