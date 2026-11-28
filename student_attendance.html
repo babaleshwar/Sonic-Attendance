@@ -343,11 +343,23 @@
       if (isListening) return;
 
       const msgBox = document.getElementById('detection-msg-box');
+      if (msgBox) {
+        msgBox.className = 'p-3 rounded-lg bg-sky-950/80 border border-sky-400/50 text-xs font-mono text-center text-sky-200';
+        msgBox.innerHTML = '🔄 Checking active lecture broadcast from server...';
+      }
+
+      // Check current lecture broadcast status immediately on button tap
+      await syncActiveSession();
       if (!isClassActive) {
-        showToast('Lecturer broadcast is currently stopped. Please wait for lecturer to start broadcast.', 'error', 'Broadcast Standby');
+        await new Promise(r => setTimeout(r, 600));
+        await syncActiveSession();
+      }
+
+      if (!isClassActive) {
+        showToast('No active lecture broadcast on this server. Make sure lecturer has clicked "Start Broadcast"!', 'error', 'Broadcast Standby');
         if (msgBox) {
           msgBox.className = 'p-3 rounded-lg bg-amber-950/80 border border-amber-500/50 text-xs font-mono text-center text-amber-200';
-          msgBox.innerHTML = '⏳ <strong>Broadcast Standby:</strong> Lecturer has stopped broadcast. Waiting for lecture broadcast...';
+          msgBox.innerHTML = '⏳ <strong>Broadcast Standby:</strong> Lecturer broadcast is not active.<br/><span class="text-amber-300">Click <strong>Start Broadcast</strong> on Lecturer Console first!</span>';
         }
         return;
       }
@@ -448,13 +460,13 @@
 
           // Live spectrum status display during listening
           if (framesChecked % 4 === 0 && msgBox) {
-            msgBox.innerHTML = `👂 <strong>Analyzing Room Audio:</strong> Ultrasonic Signal: <span class="font-bold ${ultrasonicEnergy >= 14 ? 'text-emerald-300' : 'text-cyan-300'}">${ultrasonicEnergy}</span> (Threshold: 14)`;
+            msgBox.innerHTML = `👂 <strong>Analyzing Room Audio:</strong> Ultrasonic Signal: <span class="font-bold ${ultrasonicEnergy >= 6 ? 'text-emerald-300' : 'text-cyan-300'}">${ultrasonicEnergy}</span> (Threshold: 6)`;
           }
 
           // STRICT ACOUSTIC VERIFICATION:
-          // The phone's microphone MUST physically detect energy in the 17.5 - 20.5 kHz ultrasonic range!
-          // Normal human speech/fans have 0 energy at 18-20 kHz. Only the lecturer laptop creates this!
-          const isRealUltrasonicDetected = (ultrasonicEnergy >= 14 && ultrasonicEnergy > avg + 4);
+          // Normal room background voice/fans have 0 in 17.5-20.5 kHz range.
+          // Ultrasonic energy >= 6 confirms laptop speaker acoustic beacon!
+          const isRealUltrasonicDetected = (ultrasonicEnergy >= 6 && ultrasonicEnergy > avg + 2);
 
           if (isRealUltrasonicDetected) {
             detectionConfirmed = true;
@@ -471,7 +483,7 @@
           // FAIL! Student is outside the classroom (e.g. 3-6 rooms away) or laptop is not transmitting!
           if (framesChecked > 360) {
             stopListening();
-            onSignalFailed('OUT OF RANGE: No 19.25 kHz ultrasonic signal detected. You must be physically inside Classroom 304 near the lecturer laptop speakers.');
+            onSignalFailed('No 19.25 kHz ultrasonic signal heard. Ensure laptop speaker volume is 75-90% and laptop is broadcasting.');
             return;
           }
 
@@ -485,7 +497,7 @@
         stopListening();
         if (msgBox) {
           msgBox.className = 'p-3 rounded-lg bg-amber-950/80 border border-amber-500/50 text-xs font-mono text-center text-amber-200';
-          msgBox.innerHTML = `⚠️ <strong>Mic Note:</strong> ${err.message}<br/><span class="text-amber-300">Tap <strong>⚡ Instant Check-in</strong> below to save directly to database!</span>`;
+          msgBox.innerHTML = `⚠️ <strong>Mic Note:</strong> ${err.message}<br/><div class="mt-2 flex items-center justify-center gap-2"><button type="button" onclick="promptManualCheckin()" class="px-3 py-1 bg-cyan-700 hover:bg-cyan-600 text-white font-bold rounded-lg text-xs cursor-pointer">🔑 Enter Screen Token</button><button type="button" onclick="performDirectCheckin()" class="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs cursor-pointer">⚡ Instant Check-in</button></div>`;
         }
         showToast(err.message, 'error', 'Mic Note');
       }
@@ -509,7 +521,7 @@
       const btnIcon = document.getElementById('btn-sync-icon');
       const syncBtn = document.getElementById('attendanceBtn');
 
-      if (btnLabel) btnLabel.textContent = 'OUT OF RANGE';
+      if (btnLabel) btnLabel.textContent = 'SIGNAL MISSED';
       if (btnIcon) btnIcon.textContent = 'volume_off';
       if (syncBtn) {
         syncBtn.style.boxShadow = '0 0 35px rgba(239, 68, 68, 0.75)';
@@ -519,10 +531,18 @@
 
       if (msgBox) {
         msgBox.className = 'p-3.5 rounded-lg bg-red-950/90 border border-red-500/60 text-xs font-mono text-center text-red-200';
-        msgBox.innerHTML = `❌ <strong>ACOUSTIC VERIFICATION REJECTED:</strong><br/><span class="text-red-300 text-[11px]">${reason}</span>`;
+        msgBox.innerHTML = `❌ <strong>ACOUSTIC SIGNAL NOT DETECTED:</strong><br/><span class="text-red-300 text-[11px]">${reason}</span><br/><div class="mt-2.5 flex items-center justify-center gap-2"><button type="button" onclick="promptManualCheckin()" class="px-3 py-1 bg-cyan-700 hover:bg-cyan-600 text-white font-bold rounded-lg text-xs cursor-pointer">🔑 Enter Screen Token</button><button type="button" onclick="performDirectCheckin()" class="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs cursor-pointer">⚡ Instant Check-in</button></div>`;
       }
 
-      showToast('❌ Ultrasonic beacon not detected. You must be physically inside the classroom near the lecturer laptop.', 'error', 'Out of Range');
+      showToast('❌ Ultrasonic beacon not heard. Increase laptop volume to 80% or tap fallback below.', 'error', 'Signal Not Heard');
+    }
+
+    function promptManualCheckin() {
+      const token = prompt('Enter the 4-character token displayed on lecturer console (e.g. #9747):');
+      if (token && token.trim()) {
+        const clean = token.replace('#', '').trim().toUpperCase();
+        performCheckinBackend('Manual Lecturer Token', clean);
+      }
     }
 
     async function onSignalDetected(signalInfo) {

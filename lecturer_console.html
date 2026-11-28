@@ -759,6 +759,9 @@
 
   async function startUltrasonicBroadcast() {
     initAudioEngine();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      try { await audioCtx.resume(); } catch(e) {}
+    }
     if (!audioCtx || !analyser) return;
 
     if (osc) {
